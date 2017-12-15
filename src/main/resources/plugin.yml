@@ -1,0 +1,4 @@
+name: SigngiS
+version: ${project.version}
+main: net.awesomepowered.signgis.SigngiS
+authors: [LaxWasHere]

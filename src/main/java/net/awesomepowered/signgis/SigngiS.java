@@ -38,7 +38,7 @@ public final class SigngiS extends JavaPlugin implements Listener {
 
     @EventHandler
     public void playerInteract(PlayerInteractEvent ev) {
-        if (ev.getAction() == Action.LEFT_CLICK_BLOCK && (ev.getClickedBlock().getType() != Material.SIGN_POST)) {
+        if (ev.getAction() == Action.LEFT_CLICK_BLOCK || (ev.getClickedBlock().getType() != Material.SIGN_POST)) {
             return;
         }
         Sign s = (Sign) ev.getClickedBlock().getState();

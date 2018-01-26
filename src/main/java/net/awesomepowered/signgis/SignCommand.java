@@ -12,16 +12,21 @@ import org.bukkit.entity.Player;
  */
 public class SignCommand implements CommandExecutor {
 
+    private SigngiS plugin;
+
+    public SignCommand(SigngiS signgiS) {
+        this.plugin = signgiS;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender.hasPermission("lesign.signer") && sender instanceof Player) {
             Player p = (Player) sender;
-            if (SigngiS.leSigners.contains(p.getUniqueId())) {
-                SigngiS.leSigners.remove(p.getUniqueId());
+            if (plugin.leSigners.contains(p.getUniqueId())) {
+                plugin.leSigners.remove(p.getUniqueId());
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[SigngiS] &cYou are no longer an active signer"));
             } else {
-                SigngiS.leSigners.add(p.getUniqueId());
+                plugin.leSigners.add(p.getUniqueId());
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[SigngiS] &aYou are now an active signer"));
             }
 

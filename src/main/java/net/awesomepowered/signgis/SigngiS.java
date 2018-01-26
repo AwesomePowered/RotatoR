@@ -11,23 +11,27 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public final class SigngiS extends JavaPlugin implements Listener {
+public final class SigngiS extends JavaPlugin {
 
-    public HashMap<Location, Integer> leSign = new HashMap<>();
-    public static List<UUID> leSigners = new ArrayList<>();
+    static SigngiS main;
+    public HashMap<Location, LeSign> leSign = new HashMap<>();
+    public List<UUID> leSigners = new ArrayList<>();
     int rpm = 10;
+    boolean debug = false;
 
     @Override
     public void onEnable() {
+        main =  this;
         saveDefaultConfig();
         rpm = getConfig().getInt("rpm");
-        getCommand("lesign").setExecutor(new SignCommand());
-        Bukkit.getPluginManager().registerEvents(this, this);
+        getCommand("lesign").setExecutor(new SignCommand(this));
+        Bukkit.getPluginManager().registerEvents(new SigningListener(this), this);
         spoolSigns();
     }
 
@@ -36,39 +40,22 @@ public final class SigngiS extends JavaPlugin implements Listener {
         saveSigns();
     }
 
-    @EventHandler
-    public void playerInteract(PlayerInteractEvent ev) {
-        if (ev.getAction() == Action.LEFT_CLICK_BLOCK || (ev.getClickedBlock().getType() != Material.SIGN_POST)) {
-            return;
-        }
-        Sign s = (Sign) ev.getClickedBlock().getState();
-        if (leSigners.contains(ev.getPlayer().getUniqueId())) {
-                spoolSign(s);
-        }
+    public static SigngiS getMain() {
+        return main;
     }
 
-    public void spoolSign(Sign s) {
-        s.setRawData((byte) 0); //should sync all on start
-        s.update();
-        if (leSign.keySet().contains(s.getLocation())) { //should probably move this up there
-            Bukkit.getScheduler().cancelTask(leSign.get(s.getLocation()));
-            leSign.remove(s.getLocation());
+    public void spoolSign(LeSign s) {
+        s.getSign().setRawData((byte) 0);
+        s.getSign().update();
+        if (leSign.keySet().contains(s.getSign().getLocation())) {
+            Bukkit.getScheduler().cancelTask(s.getTaskID());
+            leSign.remove(s.getSign().getLocation());
             return;
         }
-        leSign.put(s.getLocation(), Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-            if (s.getLocation().getBlock().getType() != Material.SIGN_POST) {
-                getLogger().log(Level.WARNING, "Oh noes! A sign disappeared.");
-                Bukkit.getScheduler().cancelTask(leSign.get(s.getLocation()));
-                leSign.remove(s.getLocation());
-            }
-            if (s.getRawData() == 15) {
-                s.setRawData((byte) 0);
-            } else {
-                s.setRawData((byte) (s.getRawData()+1));
-            }
-            s.update();
-        }, 0,rpm));
+        s.spoolUp();
+        leSign.put(s.getSign().getLocation(), s);
     }
+
 
     public void spoolSigns() {
         if (getConfig().getConfigurationSection("signs") == null) {
@@ -76,21 +63,18 @@ public final class SigngiS extends JavaPlugin implements Listener {
         }
         for (String s : getConfig().getConfigurationSection("signs").getKeys(false)) {
             Location loc = stringToLoc(s);
-            getLogger().log(Level.INFO, "Spooling up sign at " + s);
             if (loc.getBlock().getType() == Material.SIGN_POST) {
-                spoolSign((Sign) loc.getBlock().getState());
+                Sign sign = (Sign) loc.getBlock().getState();
+                int mode = getConfig().getInt("signs."+s+".mode");
+                debug( "Main", "Spooling up sign at " + s, "Mode: " + mode);
+                spoolSign(new LeSign(sign, mode, 0, rpm));
             }
         }
     }
 
     public void saveSigns() {
-        ArrayList<String> locs = new ArrayList<>();
-        for (Location loc : leSign.keySet()) {
-            locs.add(locToString(loc));
-        }
-        for (String s : locs) {
-            //getConfig().getConfigurationSection("signs").set(s+".mode", 0);
-            getConfig().set("signs."+s+".mode",0);
+        for (LeSign leSign : leSign.values()) {
+            getConfig().set("signs."+locToString(leSign.getSign().getLocation())+".mode", leSign.getMode());
         }
         saveConfig();
     }
@@ -106,5 +90,9 @@ public final class SigngiS extends JavaPlugin implements Listener {
     public Location stringToLoc(String s) {
         String[] loc = s.split("~");
         return new Location(Bukkit.getWorld(loc[0]),Double.valueOf(loc[1]),Double.valueOf(loc[2]),Double.valueOf(loc[3]));
+    }
+
+    public void debug(Object... o) {
+        if (debug) getLogger().log(Level.INFO, Arrays.toString(o));
     }
 }

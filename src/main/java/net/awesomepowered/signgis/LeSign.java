@@ -36,6 +36,14 @@ public class LeSign { //implement Sign?
         this.taskID = taskID;
     }
 
+    public int getRpm() {
+        return rpm;
+    }
+
+    public void setRpm(int rpm) {
+        this.rpm = rpm;
+    }
+
     public Sign getSign() {
         return sign;
     }

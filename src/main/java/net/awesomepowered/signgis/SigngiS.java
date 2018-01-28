@@ -23,7 +23,7 @@ public final class SigngiS extends JavaPlugin {
     public HashMap<Location, LeSign> leSign = new HashMap<>();
     public List<UUID> leSigners = new ArrayList<>();
     int rpm = 10;
-    boolean debug = false;
+    boolean debug = true;
 
     @Override
     public void onEnable() {
@@ -66,7 +66,8 @@ public final class SigngiS extends JavaPlugin {
             if (loc.getBlock().getType() == Material.SIGN_POST) {
                 Sign sign = (Sign) loc.getBlock().getState();
                 int mode = getConfig().getInt("signs."+s+".mode");
-                debug( "Main", "Spooling up sign at " + s, "Mode: " + mode);
+                int rpm = (getConfig().getInt("signs."+s+".rpm") == 0) ? this.rpm : getConfig().getInt("signs."+s+".rpm");
+                debug( "Main", "Spooling up sign at " + s, "Mode: " + mode, "RPM: " + rpm);
                 spoolSign(new LeSign(sign, mode, 0, rpm));
             }
         }
@@ -75,6 +76,7 @@ public final class SigngiS extends JavaPlugin {
     public void saveSigns() {
         for (LeSign leSign : leSign.values()) {
             getConfig().set("signs."+locToString(leSign.getSign().getLocation())+".mode", leSign.getMode());
+            getConfig().set("signs."+locToString(leSign.getSign().getLocation())+".rpm", leSign.getRpm());
         }
         saveConfig();
     }

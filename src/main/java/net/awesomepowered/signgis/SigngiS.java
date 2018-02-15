@@ -23,13 +23,15 @@ public final class SigngiS extends JavaPlugin {
     public HashMap<Location, LeSign> leSign = new HashMap<>();
     public List<UUID> leSigners = new ArrayList<>();
     int rpm = 10;
-    boolean debug = true;
+    LeSign selected = null;
+    boolean debug = false;
 
     @Override
     public void onEnable() {
         main =  this;
         saveDefaultConfig();
         rpm = getConfig().getInt("rpm");
+        debug = getConfig().getBoolean("debug");
         getCommand("lesign").setExecutor(new SignCommand(this));
         Bukkit.getPluginManager().registerEvents(new SigningListener(this), this);
         spoolSigns();
@@ -48,8 +50,7 @@ public final class SigngiS extends JavaPlugin {
         s.getSign().setRawData((byte) 0);
         s.getSign().update();
         if (leSign.keySet().contains(s.getSign().getLocation())) {
-            Bukkit.getScheduler().cancelTask(s.getTaskID());
-            leSign.remove(s.getSign().getLocation());
+            s.selfDestruct();
             return;
         }
         s.spoolUp();
@@ -66,9 +67,14 @@ public final class SigngiS extends JavaPlugin {
             if (loc.getBlock().getType() == Material.SIGN_POST) {
                 Sign sign = (Sign) loc.getBlock().getState();
                 int mode = getConfig().getInt("signs."+s+".mode");
+                String sound = getConfig().getString("signs."+s+".sound");
+                String effect = getConfig().getString("signs."+s+".effect");
                 int rpm = (getConfig().getInt("signs."+s+".rpm") == 0) ? this.rpm : getConfig().getInt("signs."+s+".rpm");
-                debug( "Main", "Spooling up sign at " + s, "Mode: " + mode, "RPM: " + rpm);
-                spoolSign(new LeSign(sign, mode, 0, rpm));
+                LeSign leSign = new LeSign(sign, mode, 0, rpm);
+                leSign.setEffect(effect);
+                leSign.setSound(sound);
+                debug( "Main", "Spooling up sign at " + s, "Mode: " + mode, "RPM: " + rpm, "Sound: " + sound, "Effect: " + effect);
+                spoolSign(leSign);
             }
         }
     }
@@ -77,6 +83,8 @@ public final class SigngiS extends JavaPlugin {
         for (LeSign leSign : leSign.values()) {
             getConfig().set("signs."+locToString(leSign.getSign().getLocation())+".mode", leSign.getMode());
             getConfig().set("signs."+locToString(leSign.getSign().getLocation())+".rpm", leSign.getRpm());
+            getConfig().set("signs."+locToString(leSign.getSign().getLocation())+".sound", leSign.getSound());
+            getConfig().set("signs."+locToString(leSign.getSign().getLocation())+".effect", leSign.getEffect());
         }
         saveConfig();
     }

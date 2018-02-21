@@ -1,3 +1,4 @@
 rpm: 10
 debug: false
 signs:
+heads:

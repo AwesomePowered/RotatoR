@@ -1,5 +1,8 @@
 package net.awesomepowered.signgis;
 
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -29,7 +32,6 @@ public class SignCommand implements CommandExecutor {
                 plugin.leSigners.add(p.getUniqueId());
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[SigngiS] &aYou are now an active signer"));
             }
-
         }
         return false;
     }

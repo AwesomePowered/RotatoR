@@ -6,7 +6,7 @@
 
     <groupId>net.awesomepowered</groupId>
     <artifactId>SigngiS</artifactId>
-    <version>0.4</version>
+    <version>0.6</version>
     <packaging>jar</packaging>
 
     <name>SigngiS</name>

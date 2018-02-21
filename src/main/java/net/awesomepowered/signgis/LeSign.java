@@ -8,7 +8,7 @@ import org.bukkit.block.Sign;
 
 import java.util.logging.Level;
 
-public class LeSign { //implement Sign?
+public class LeSign implements Spinnable {
 
     private Sign sign;
     private int mode;
@@ -36,7 +36,7 @@ public class LeSign { //implement Sign?
         return taskID;
     }
 
-    private void setTaskID(int taskID) {
+    public void setTaskID(int taskID) {
         this.taskID = taskID;
     }
 
@@ -119,7 +119,7 @@ public class LeSign { //implement Sign?
         }
     }
 
-    private void play() {
+    public void play() {
         if (sound != null) {
             sign.getLocation().getWorld().playSound(sign.getLocation(), Sound.valueOf(sound), 1, 1);
         }

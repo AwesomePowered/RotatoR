@@ -6,6 +6,7 @@ import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Sign;
+import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,17 +28,61 @@ public class SigningListener implements Listener {
             plugin.debug("Interact","was called but player is not a signer");
             return;
         }
+
         ev.setCancelled(true);
-        if (ev.getAction() == Action.LEFT_CLICK_BLOCK && plugin.leSign.containsKey(ev.getClickedBlock().getLocation())) {
-            plugin.debug("Interact L", "on a signed sign, selecting.");
-            plugin.selected = plugin.leSign.get(ev.getClickedBlock().getLocation());
-            sendMessage(ev.getPlayer(), "&7[SigngiS] &aYou have selected a signed sign");
+
+        if (ev.getClickedBlock() == null) {
+            plugin.debug("Interact","was called but block is not a SIGN_POST/SKULL");
             return;
         }
+
+        if (ev.getAction() == Action.LEFT_CLICK_BLOCK) {
+
+            if (plugin.leSign.containsKey(ev.getClickedBlock().getLocation())) {
+                plugin.debug("Interact L", "on a signed sign, selecting.");
+                plugin.selected = plugin.leSign.get(ev.getClickedBlock().getLocation());
+                sendMessage(ev.getPlayer(), "&7[SigngiS] &aYou have selected a signed sign");
+                return;
+            }
+
+            if (plugin.leHead.containsKey(ev.getClickedBlock().getLocation())) {
+                plugin.debug("Interact L", "on a signed head, selecting.");
+                plugin.selected = plugin.leHead.get(ev.getClickedBlock().getLocation());
+                sendMessage(ev.getPlayer(), "&7[SigngiS] &aYou have selected a signed head");
+                return;
+            }
+
+            if (ev.getClickedBlock().getType() == Material.SIGN_POST) {
+                plugin.debug("Interact L","Making a LeSign object");
+                LeSign sign = new LeSign((Sign) ev.getClickedBlock().getState(), 0,0, plugin.rpm);
+                plugin.leSign.put(sign.getSign().getLocation(), sign);
+                sign.setMode((ev.getPlayer().isSneaking()) ? 1 : 0);
+                sign.spoolUp();
+                plugin.selected = sign;
+                sendMessage(ev.getPlayer(), "&7[SigngiS] &aYou have signed a sign");
+                plugin.debug("Interact","tried to spool sign");
+                return;
+            }
+
+            if (ev.getClickedBlock().getType() == Material.SKULL) {
+                Skull skull = (Skull) ev.getClickedBlock().getState();
+                plugin.debug("Interact L", "Making a LeHead object");
+                LeHead head = new LeHead((Skull) ev.getClickedBlock().getState(), 0,0, plugin.rpm);
+                plugin.leHead.put(head.getHead().getLocation(), head);
+                head.setMode((ev.getPlayer().isSneaking()) ? 1 : 0);
+                head.spoolUp();
+                plugin.selected = head;
+                sendMessage(ev.getPlayer(), "&7[SigngiS] &aYou have signed a head");
+                plugin.debug("Interact L","tried to spool head");
+                return;
+            }
+        }
+
         if (ev.getAction() != Action.RIGHT_CLICK_BLOCK) {
             plugin.debug("Interact", "was called but is not a right click");
             return;
         }
+
         if (plugin.leSign.containsKey(ev.getClickedBlock().getLocation())) {
             plugin.debug("Interact", "was called on an signed sign, unsigning..");
             plugin.leSign.get(ev.getClickedBlock().getLocation()).selfDestruct();
@@ -45,18 +90,15 @@ public class SigningListener implements Listener {
             sendMessage(ev.getPlayer(), "&7[SigngiS] &cThe sign is no longer signed");
             return;
         }
-        if (ev.getClickedBlock() == null || ev.getClickedBlock().getType() != Material.SIGN_POST) {
-            plugin.debug("Interact","was called but block is not a SIGN_POST");
+
+        if (plugin.leHead.containsKey(ev.getClickedBlock().getLocation())) {
+            plugin.debug("Interact", "was called on a head, decapitating..");
+            plugin.leHead.get(ev.getClickedBlock().getLocation()).selfDestruct();
+            plugin.selected = null;
+            sendMessage(ev.getPlayer(), "&7[SigngiS] &cThe head is no longer spinnin'");
             return;
         }
-        plugin.debug("Interact","Making a LeSign object");
-        LeSign sign = new LeSign((Sign) ev.getClickedBlock().getState(), 0,0, plugin.rpm);
-        plugin.leSign.put(sign.getSign().getLocation(), sign);
-        sign.setMode((ev.getPlayer().isSneaking()) ? 1 : 0);
-        sign.spoolUp();
-        plugin.selected = sign;
-        sendMessage(ev.getPlayer(), "&7[SigngiS] &aYou have signed a sign");
-        plugin.debug("Interact","tried to spool sign");
+
     }
 
     @EventHandler
@@ -77,6 +119,14 @@ public class SigningListener implements Listener {
         if (message.toLowerCase().startsWith("stop") && plugin.selected != null && message.split(" ").length == 2) {
             plugin.debug("Chat", "Stop is called with: " + message);
             parseClears(message.split(" ")[1]);
+            ev.setCancelled(true);
+            return;
+        }
+        if (message.equalsIgnoreCase("mode") && plugin.selected != null) {
+            plugin.debug("Chat", "mode is called, changing..");
+            plugin.selected.setMode(plugin.selected.getMode() == 1 ? 0 : 1);
+            plugin.selected.refresh();
+            sendMessage(ev.getPlayer(), "&7[SigngiS] &aYou have changed the sign mode");
             ev.setCancelled(true);
             return;
         }
@@ -105,6 +155,7 @@ public class SigningListener implements Listener {
             ev.setCancelled(true);
         } else {
             sendMessage(ev.getPlayer(), "&7[SigngiS] &aYou are currently a signer. Type: &cexit &ato exit.");
+            ev.setCancelled(true);
         }
     }
 
@@ -120,6 +171,10 @@ public class SigningListener implements Listener {
             plugin.selected.setEffect(null);
         }
         if (message.equalsIgnoreCase("sign")) {
+            plugin.selected.selfDestruct();
+            plugin.selected = null;
+        }
+        if (message.equalsIgnoreCase("head")) {
             plugin.selected.selfDestruct();
             plugin.selected = null;
         }

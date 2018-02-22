@@ -1,33 +1,39 @@
 package net.awesomepowered.signgis;
 
+import org.bukkit.block.BlockState;
+
 public interface Spinnable {
 
-    public int getMode();
+     BlockState getState();
 
-    public void setMode(int mode);
+     void setState(BlockState state);
 
-    public int getTaskID();
+     int getMode();
 
-    public void setTaskID(int taskId);
+     void setMode(int mode);
 
-    public int getRpm();
+     int getTaskID();
 
-    public void setRpm(int rpm);
+     void setTaskID(int taskId);
 
-    public String getEffect();
+     int getRpm();
 
-    public String getSound();
+     void setRpm(int rpm);
 
-    public void setEffect(String effect);
+     String getEffect();
 
-    public void setSound(String sound);
+     String getSound();
 
-    public void refresh();
+     void setEffect(String effect);
 
-    public void selfDestruct();
+     void setSound(String sound);
 
-    public void spoolUp();
+     void refresh();
 
-    public void play();
+     void selfDestruct();
+
+     void spoolUp();
+
+     void play();
 
 }

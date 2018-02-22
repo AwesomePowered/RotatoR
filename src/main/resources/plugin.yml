@@ -1,6 +1,8 @@
-name: SigngiS
+name: RotatoR
 version: ${project.version}
-main: net.awesomepowered.signgis.SigngiS
+main: net.awesomepowered.signgis.RotatoR
 authors: [LaxWasHere]
+load: POSTWORLD
+softdepend: [Multiverse-Core]
 commands:
   lesign:

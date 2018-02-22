@@ -1,9 +1,5 @@
 package net.awesomepowered.signgis;
 
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,22 +11,22 @@ import org.bukkit.entity.Player;
  */
 public class SignCommand implements CommandExecutor {
 
-    private SigngiS plugin;
+    private RotatoR plugin;
 
-    public SignCommand(SigngiS signgiS) {
-        this.plugin = signgiS;
+    public SignCommand(RotatoR rotatoR) {
+        this.plugin = rotatoR;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender.hasPermission("lesign.signer") && sender instanceof Player) {
+        if (sender.hasPermission("rotator.signer") && sender instanceof Player) {
             Player p = (Player) sender;
             if (plugin.leSigners.contains(p.getUniqueId())) {
                 plugin.leSigners.remove(p.getUniqueId());
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[SigngiS] &cYou are no longer an active signer"));
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&bR&fotato&bR&7] &cYou are no longer an active signer"));
             } else {
                 plugin.leSigners.add(p.getUniqueId());
-                p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[SigngiS] &aYou are now an active signer"));
+                p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&bR&fotato&bR&7] &aYou are now an active signer"));
             }
         }
         return false;

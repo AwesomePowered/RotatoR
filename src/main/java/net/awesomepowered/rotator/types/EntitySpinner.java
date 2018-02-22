@@ -1,6 +1,6 @@
-package net.awesomepowered.signgis.types;
+package net.awesomepowered.rotator.types;
 
-import net.awesomepowered.signgis.Spinnable;
+import net.awesomepowered.rotator.Spinnable;
 import org.bukkit.block.BlockState;
 
 public class EntitySpinner implements Spinnable {

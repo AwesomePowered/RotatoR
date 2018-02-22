@@ -1,8 +1,8 @@
-package net.awesomepowered.signgis.types;
+package net.awesomepowered.rotator.types;
 
-import net.awesomepowered.signgis.RotatoR;
-import net.awesomepowered.signgis.Spinnable;
-import net.awesomepowered.signgis.utils.Rotation;
+import net.awesomepowered.rotator.RotatoR;
+import net.awesomepowered.rotator.Spinnable;
+import net.awesomepowered.rotator.utils.Rotation;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;

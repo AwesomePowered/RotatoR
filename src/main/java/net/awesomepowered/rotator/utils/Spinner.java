@@ -1,4 +1,4 @@
-package net.awesomepowered.signgis.utils;
+package net.awesomepowered.rotator.utils;
 
 import org.bukkit.Material;
 import org.bukkit.block.Banner;
@@ -6,7 +6,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
-import org.bukkit.entity.ArmorStand;
 
 public class Spinner {
 

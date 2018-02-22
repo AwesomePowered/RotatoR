@@ -1,4 +1,4 @@
-package net.awesomepowered.signgis;
+package net.awesomepowered.rotator;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

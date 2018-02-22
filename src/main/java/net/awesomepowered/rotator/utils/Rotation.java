@@ -1,4 +1,4 @@
-package net.awesomepowered.signgis.utils;
+package net.awesomepowered.rotator.utils;
 
 import org.bukkit.block.BlockFace;
 

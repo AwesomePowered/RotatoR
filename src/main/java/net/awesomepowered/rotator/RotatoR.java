@@ -1,7 +1,7 @@
-package net.awesomepowered.signgis;
+package net.awesomepowered.rotator;
 
-import net.awesomepowered.signgis.types.BlockSpinner;
-import net.awesomepowered.signgis.utils.Spinner;
+import net.awesomepowered.rotator.types.BlockSpinner;
+import net.awesomepowered.rotator.utils.Spinner;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;

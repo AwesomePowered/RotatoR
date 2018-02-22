@@ -1,7 +1,7 @@
-package net.awesomepowered.signgis;
+package net.awesomepowered.rotator;
 
-import net.awesomepowered.signgis.types.BlockSpinner;
-import net.awesomepowered.signgis.utils.Spinner;
+import net.awesomepowered.rotator.types.BlockSpinner;
+import net.awesomepowered.rotator.utils.Spinner;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;

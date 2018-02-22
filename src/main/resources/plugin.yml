@@ -1,6 +1,6 @@
 name: RotatoR
 version: ${project.version}
-main: net.awesomepowered.signgis.RotatoR
+main: net.awesomepowered.rotator.RotatoR
 authors: [LaxWasHere]
 load: POSTWORLD
 softdepend: [Multiverse-Core]

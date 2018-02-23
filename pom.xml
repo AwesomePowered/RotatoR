@@ -6,7 +6,7 @@
 
     <groupId>net.awesomepowered</groupId>
     <artifactId>RotatoR</artifactId>
-    <version>0.6</version>
+    <version>0.1</version>
     <packaging>jar</packaging>
 
     <name>RotatoR</name>

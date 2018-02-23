@@ -89,7 +89,7 @@ public class BlockSpinner implements Spinnable {
     }
 
     public void spoolUp() {
-        RotatoR.getMain().debug("LeSign","spoolUp called");
+        RotatoR.getMain().debug("BlockSpinner","spoolUp called");
         if (state instanceof Sign || state instanceof Banner) {
             runLegacy();
         } else if (state instanceof Skull) {

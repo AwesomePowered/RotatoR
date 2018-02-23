@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -35,13 +36,21 @@ public final class RotatoR extends JavaPlugin {
         debug = getConfig().getBoolean("debug");
         getCommand("lesign").setExecutor(new SignCommand(this));
         Bukkit.getPluginManager().registerEvents(new SigningListener(this), this);
+        checkForSigns();
         spoolSpinners();
         signerTimer();
     }
 
     public void onDisable() {
-        Bukkit.getScheduler().cancelAllTasks();
         saveSpinners();
+    }
+
+    public void checkForSigns() {
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("SigngiS");
+        if (plugin != null) {
+            getLogger().log(Level.INFO, "I asked life for some documentation and it gave me a bloody lemon.");
+            Bukkit.getPluginManager().disablePlugin(plugin);
+        }
     }
 
     public static RotatoR getMain() {
@@ -83,6 +92,7 @@ public final class RotatoR extends JavaPlugin {
             getConfig().set("spinner."+loc+".rpm", spinner.getRpm());
             getConfig().set("spinner."+loc+".sound", spinner.getSound());
             getConfig().set("spinner."+loc+".effect", spinner.getEffect());
+            spinner.selfDestruct();
         }
         saveConfig();
     }
@@ -108,9 +118,11 @@ public final class RotatoR extends JavaPlugin {
     public void signerTimer() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
             for (UUID uuid : leSigners) {
-                if (Bukkit.getPlayer(uuid) != null) {
-                    Player p = Bukkit.getPlayer(uuid);
+                Player p = Bukkit.getPlayer(uuid);
+                if (p != null) {
                     p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&6[&aSigner mode&6]")));
+                } else {
+                    leSigners.remove(uuid);
                 }
             }
         }, 20, 20);

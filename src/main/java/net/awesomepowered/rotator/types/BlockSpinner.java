@@ -5,6 +5,7 @@ import net.awesomepowered.rotator.Spinnable;
 import net.awesomepowered.rotator.utils.Rotation;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Banner;
@@ -28,6 +29,10 @@ public class BlockSpinner implements Spinnable {
         this.state = state;
         this.mode = mode;
         this.rpm = rpm;
+    }
+
+    public Location getLocation() {
+        return state.getLocation();
     }
 
     public int getMode() {
@@ -80,7 +85,7 @@ public class BlockSpinner implements Spinnable {
 
     public void selfDestruct() {
         Bukkit.getScheduler().cancelTask(taskID);
-        RotatoR.getMain().spinners.remove(state.getLocation());
+        RotatoR.getMain().blockSpinners.remove(state.getLocation());
     }
 
     public void refresh() {

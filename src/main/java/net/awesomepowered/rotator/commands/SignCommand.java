@@ -1,5 +1,6 @@
-package net.awesomepowered.rotator;
+package net.awesomepowered.rotator.commands;
 
+import net.awesomepowered.rotator.RotatoR;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

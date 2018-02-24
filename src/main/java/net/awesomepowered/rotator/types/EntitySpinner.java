@@ -1,87 +1,126 @@
 package net.awesomepowered.rotator.types;
 
+import com.google.common.util.concurrent.AtomicDouble;
+import net.awesomepowered.rotator.RotatoR;
 import net.awesomepowered.rotator.Spinnable;
-import org.bukkit.block.BlockState;
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+
+import java.util.logging.Level;
 
 public class EntitySpinner implements Spinnable {
 
-    @Override
-    public BlockState getState() {
-        return null;
+    private LivingEntity entity;
+    private int mode;
+    private int taskID;
+    private int rpm;
+    private String effect;
+    private String sound;
+    private double yawChange = 15; //lower = slower turn
+    private AtomicDouble trouble = new AtomicDouble();
+
+    public EntitySpinner(LivingEntity ent, int mode, int rpm) {
+        this.entity = ent;
+        this.mode = mode;
+        this.rpm = rpm;
+        entity.setAI(false);
     }
 
-    @Override
-    public void setState(BlockState state) {
-
+    public Entity getEntity() {
+        return entity;
     }
 
-    @Override
+    public void setEntity(LivingEntity entity) {
+        this.entity = entity;
+    }
+
+    public double getYawChange() {
+        return this.yawChange;
+    }
+
+    public void setYawChange(double yawChange) {
+        this.yawChange = yawChange;
+    }
+
+    public Location getLocation() {
+        return entity.getLocation();
+    }
+
     public int getMode() {
-        return 0;
+        return this.mode;
     }
 
-    @Override
     public void setMode(int mode) {
-
+        setYawChange(getYawChange() * -1);
     }
 
-    @Override
     public int getTaskID() {
-        return 0;
+        return this.taskID;
     }
 
-    @Override
     public void setTaskID(int taskId) {
-
+        this.taskID = taskId;
     }
 
-    @Override
     public int getRpm() {
-        return 0;
+        return this.rpm;
     }
 
-    @Override
     public void setRpm(int rpm) {
-
+        this.rpm = rpm;
     }
 
-    @Override
     public String getEffect() {
-        return null;
+        return this.effect;
     }
 
-    @Override
     public String getSound() {
-        return null;
+        return this.sound;
     }
 
-    @Override
     public void setEffect(String effect) {
-
+        this.effect = effect;
     }
 
-    @Override
     public void setSound(String sound) {
-
+        this.sound = sound;
     }
 
-    @Override
     public void refresh() {
-
+        Bukkit.getScheduler().cancelTask(taskID);
+        spoolUp();
     }
 
-    @Override
     public void selfDestruct() {
-
+        entity.setAI(true);
+        Bukkit.getScheduler().cancelTask(taskID);
+        RotatoR.getMain().blockSpinners.remove(entity.getLocation());
     }
 
-    @Override
     public void spoolUp() {
-
+        Location constant = entity.getLocation();
+        RotatoR.getMain().debug("eSpool","Using mode 0");
+        setTaskID(Bukkit.getScheduler().scheduleSyncRepeatingTask(RotatoR.getMain(), () -> {
+            if (entity.isDead()) {
+                RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! An entity is ded!");
+                selfDestruct();
+            }
+            constant.setYaw((float) trouble.getAndAdd(yawChange) % 360); //shhh
+            entity.teleport(constant);
+            play();
+        }, 0, rpm));
     }
 
-    @Override
     public void play() {
-
+        if (sound != null) {
+            entity.getLocation().getWorld().playSound(entity.getLocation(), Sound.valueOf(sound), 1, 1);
+        }
+        if (effect != null) {
+            entity.getLocation().getWorld().playEffect(entity.getLocation().add(0.5,0,0.5), Effect.valueOf(effect), 1);
+        }
     }
 }

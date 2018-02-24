@@ -1,5 +1,6 @@
 package net.awesomepowered.rotator.utils;
 
+import com.google.common.primitives.Doubles;
 import org.bukkit.block.BlockFace;
 
 public class Rotation {
@@ -79,6 +80,15 @@ public class Rotation {
                 return 15;
             default:
                 throw new IllegalArgumentException("Invalid BlockFace rotation: " + rotation);
+        }
+    }
+
+    public static boolean isDouble(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
     }
 }

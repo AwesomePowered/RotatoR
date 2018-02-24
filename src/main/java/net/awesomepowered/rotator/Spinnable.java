@@ -1,12 +1,10 @@
 package net.awesomepowered.rotator;
 
-import org.bukkit.block.BlockState;
+import org.bukkit.Location;
 
 public interface Spinnable {
 
-     BlockState getState();
-
-     void setState(BlockState state);
+     Location getLocation();
 
      int getMode();
 

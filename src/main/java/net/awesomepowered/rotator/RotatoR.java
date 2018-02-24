@@ -1,5 +1,9 @@
 package net.awesomepowered.rotator;
 
+import net.awesomepowered.rotator.commands.SignCommand;
+import net.awesomepowered.rotator.listeners.BlockSignListener;
+import net.awesomepowered.rotator.listeners.EntitySignListener;
+import net.awesomepowered.rotator.listeners.SignerListener;
 import net.awesomepowered.rotator.types.BlockSpinner;
 import net.awesomepowered.rotator.utils.Spinner;
 import net.md_5.bungee.api.ChatMessageType;
@@ -22,10 +26,11 @@ import java.util.logging.Level;
 public final class RotatoR extends JavaPlugin {
 
     static RotatoR main;
-    public HashMap<Location, Spinnable> spinners = new HashMap<>();
+    public HashMap<Location, Spinnable> blockSpinners = new HashMap<>();
+    public HashMap<UUID, Spinnable> entitySpinners = new HashMap<>();
     public List<UUID> leSigners = new ArrayList<>();
-    int rpm = 10;
-    Spinnable selected = null;
+    public int rpm = 10;
+    public Spinnable selected = null;
     boolean debug = false;
 
     @Override
@@ -35,7 +40,9 @@ public final class RotatoR extends JavaPlugin {
         rpm = getConfig().getInt("rpm");
         debug = getConfig().getBoolean("debug");
         getCommand("lesign").setExecutor(new SignCommand(this));
-        Bukkit.getPluginManager().registerEvents(new SigningListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new SignerListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new BlockSignListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new EntitySignListener(this), this);
         checkForSigns();
         spoolSpinners();
         signerTimer();
@@ -78,7 +85,7 @@ public final class RotatoR extends JavaPlugin {
                 blockSpinner.setSound(sound);
                 debug( "Main", "Spooling up spinner at " + s, "Mode: " + mode, "RPM: " + rpm, "Sound: " + sound, "Effect: " + effect);
                 blockSpinner.spoolUp();
-                spinners.put(loc, blockSpinner);
+                blockSpinners.put(loc, blockSpinner);
             }
         }
     }
@@ -86,14 +93,15 @@ public final class RotatoR extends JavaPlugin {
 
     public void saveSpinners() {
         getConfig().set("spinner", null);
-        for (Spinnable spinner : spinners.values()) {
-            String loc = locToString(spinner.getState().getLocation());
+        for (Spinnable spinner : blockSpinners.values()) {
+            String loc = locToString(spinner.getLocation());
             getConfig().set("spinner."+loc+".mode", spinner.getMode());
             getConfig().set("spinner."+loc+".rpm", spinner.getRpm());
             getConfig().set("spinner."+loc+".sound", spinner.getSound());
             getConfig().set("spinner."+loc+".effect", spinner.getEffect());
-            spinner.selfDestruct();
+            Bukkit.getScheduler().cancelTask(spinner.getTaskID());
         }
+        blockSpinners.clear();
         saveConfig();
     }
 

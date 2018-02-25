@@ -12,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 
 public class EntitySignListener implements Listener {
+
     RotatoR plugin;
 
     public EntitySignListener(RotatoR rotatoR) {
@@ -20,7 +21,7 @@ public class EntitySignListener implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent ev) {
-        if (!plugin.leSigners.contains(ev.getDamager().getUniqueId())) {
+        if (!plugin.leSigners.containsKey(ev.getDamager().getUniqueId())) {
             plugin.debug("Damage", "was called but player is not a signer");
             return;
         }
@@ -30,7 +31,7 @@ public class EntitySignListener implements Listener {
         Player p = (Player) ev.getDamager();
         if (plugin.entitySpinners.containsKey(ev.getEntity().getUniqueId())) {
             plugin.debug("Damage", "on a signed spinner, selecting.");
-            plugin.selected = plugin.entitySpinners.get(ev.getEntity().getUniqueId());
+            plugin.leSigners.put(p.getUniqueId(), plugin.entitySpinners.get(ev.getEntity().getUniqueId()));
             sendMessage(p, "&aYou have selected a signed spinner");
             return;
         }
@@ -40,7 +41,7 @@ public class EntitySignListener implements Listener {
             EntitySpinner spinner = new EntitySpinner((LivingEntity) ev.getEntity(), 0, plugin.rpm);
             plugin.entitySpinners.put(ev.getEntity().getUniqueId(), spinner);
             spinner.spoolUp();
-            plugin.selected = spinner;
+            plugin.leSigners.put(p.getUniqueId(), spinner);
             sendMessage(p, "&aYou have signed an Entity spinner");
             plugin.debug("Damage","tried to spool spinner");
         }
@@ -48,12 +49,12 @@ public class EntitySignListener implements Listener {
 
     @EventHandler
     public void onEntityInteract(PlayerInteractAtEntityEvent ev) {
-        if (plugin.leSigners.contains(ev.getPlayer().getUniqueId()) && plugin.entitySpinners.containsKey(ev.getRightClicked().getUniqueId())) {
+        if (plugin.leSigners.containsKey(ev.getPlayer().getUniqueId()) && plugin.entitySpinners.containsKey(ev.getRightClicked().getUniqueId())) {
             ev.setCancelled(true);
 
             plugin.debug("eInteract", "was called on an signed entity spinner, unsigning..");
             plugin.entitySpinners.get(ev.getRightClicked().getUniqueId()).selfDestruct();
-            plugin.selected = null;
+            plugin.leSigners.put(ev.getPlayer().getUniqueId(), null);
             sendMessage(ev.getPlayer(), "&cThe spinner is no longer signed");
         }
     }

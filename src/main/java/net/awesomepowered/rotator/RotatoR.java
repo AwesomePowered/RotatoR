@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -28,9 +29,8 @@ public final class RotatoR extends JavaPlugin {
     static RotatoR main;
     public HashMap<Location, Spinnable> blockSpinners = new HashMap<>();
     public HashMap<UUID, Spinnable> entitySpinners = new HashMap<>();
-    public List<UUID> leSigners = new ArrayList<>();
+    public Map<UUID, Spinnable> leSigners = new HashMap<>();
     public int rpm = 10;
-    public Spinnable selected = null;
     boolean debug = false;
 
     @Override
@@ -79,7 +79,7 @@ public final class RotatoR extends JavaPlugin {
                 int mode = getConfig().getInt("spinner."+s+".mode");
                 String sound = getConfig().getString("spinner."+s+".sound");
                 String effect = getConfig().getString("spinner."+s+".effect");
-                int rpm = getConfig().getInt("signs."+s+".rpm", 0);
+                int rpm = getConfig().getInt("spinner."+s+".rpm", this.rpm);
                 BlockSpinner blockSpinner = new BlockSpinner(blockState, mode, rpm);
                 blockSpinner.setEffect(effect);
                 blockSpinner.setSound(sound);
@@ -125,7 +125,7 @@ public final class RotatoR extends JavaPlugin {
 
     public void signerTimer() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-            for (UUID uuid : leSigners) {
+            for (UUID uuid : leSigners.keySet()) {
                 Player p = Bukkit.getPlayer(uuid);
                 if (p != null) {
                     p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&6[&aSigner mode&6]")));

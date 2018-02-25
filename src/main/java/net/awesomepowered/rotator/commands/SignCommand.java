@@ -22,11 +22,11 @@ public class SignCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender.hasPermission("rotator.signer") && sender instanceof Player) {
             Player p = (Player) sender;
-            if (plugin.leSigners.contains(p.getUniqueId())) {
+            if (plugin.leSigners.containsKey(p.getUniqueId())) {
                 plugin.leSigners.remove(p.getUniqueId());
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&bR&fotato&bR&7] &cYou are no longer an active signer"));
             } else {
-                plugin.leSigners.add(p.getUniqueId());
+                plugin.leSigners.put(p.getUniqueId(), null);
                 p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&7[&bR&fotato&bR&7] &aYou are now an active signer"));
             }
         }

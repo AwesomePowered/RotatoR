@@ -20,11 +20,12 @@ public class BlockSignListener implements Listener {
 
     @EventHandler
     public void playerInteract(PlayerInteractEvent ev) {
-        if (!plugin.leSigners.contains(ev.getPlayer().getUniqueId())) {
+        if (!plugin.leSigners.containsKey(ev.getPlayer().getUniqueId())) {
             plugin.debug("Interact","was called but player is not a signer");
             return;
         }
 
+        Player p = ev.getPlayer();
         ev.setCancelled(true);
 
         if (ev.getClickedBlock() == null) {
@@ -36,8 +37,8 @@ public class BlockSignListener implements Listener {
 
             if (plugin.blockSpinners.containsKey(ev.getClickedBlock().getLocation())) {
                 plugin.debug("Interact L", "on a signed spinner, selecting.");
-                plugin.selected = plugin.blockSpinners.get(ev.getClickedBlock().getLocation());
-                sendMessage(ev.getPlayer(), "&aYou have selected a signed spinner");
+                plugin.leSigners.put(p.getUniqueId(), plugin.blockSpinners.get(ev.getClickedBlock().getLocation()));
+                sendMessage(p, "&aYou have selected a signed spinner");
                 return;
             }
 
@@ -45,10 +46,10 @@ public class BlockSignListener implements Listener {
                 plugin.debug("Interact L","Making a BlockSpinner object");
                 BlockSpinner spinner = new BlockSpinner(ev.getClickedBlock().getState(), 0, plugin.rpm);
                 plugin.blockSpinners.put(ev.getClickedBlock().getLocation(), spinner);
-                spinner.setMode((ev.getPlayer().isSneaking()) ? 1 : 0);
+                spinner.setMode((p.isSneaking()) ? 1 : 0);
                 spinner.spoolUp();
-                plugin.selected = spinner;
-                sendMessage(ev.getPlayer(), "&aYou have signed a Block spinner");
+                plugin.leSigners.put(p.getUniqueId(), spinner);
+                sendMessage(p, "&aYou have signed a Block spinner");
                 plugin.debug("Interact","tried to spool spinner");
                 return;
             }
@@ -63,7 +64,7 @@ public class BlockSignListener implements Listener {
         if (plugin.blockSpinners.containsKey(ev.getClickedBlock().getLocation())) {
             plugin.debug("Interact", "was called on an signed spinner, unsigning..");
             plugin.blockSpinners.get(ev.getClickedBlock().getLocation()).selfDestruct();
-            plugin.selected = null;
+            plugin.leSigners.put(p.getUniqueId(), null);
             sendMessage(ev.getPlayer(), "&cThe spinner is no longer signed");
         }
     }

@@ -12,6 +12,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import java.util.UUID;
+
 public class SignerListener implements Listener {
 
     private RotatoR plugin;
@@ -24,7 +26,7 @@ public class SignerListener implements Listener {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent ev) {
-        if (!plugin.leSigners.contains(ev.getPlayer().getUniqueId())) {
+        if (!plugin.leSigners.containsKey(ev.getPlayer().getUniqueId())) {
             plugin.debug("Chat","was called but player is not a signer");
             return;
         }
@@ -35,7 +37,7 @@ public class SignerListener implements Listener {
             plugin.debug("Damage", "Making an EntitySpinner object");
             EntitySpinner spinner = new EntitySpinner(p, 0, plugin.rpm);
             spinner.spoolUp();
-            plugin.selected = spinner;
+            plugin.leSigners.put(p.getUniqueId(), spinner);
             sendMessage(p, "&aYou spun urself");
             return;
         }
@@ -43,30 +45,30 @@ public class SignerListener implements Listener {
         if (message.equalsIgnoreCase("exit")) {
             plugin.debug("Chat","exit was called. Player no longer a signer");
             plugin.leSigners.remove(p.getUniqueId());
-            plugin.selected = null;
+            plugin.leSigners.put(p.getUniqueId(), null);
             sendMessage(p, "&cYou are no longer an active signer");
             return;
         }
-        if (message.toLowerCase().startsWith("stop") && plugin.selected != null && message.split(" ").length == 2) {
+        if (message.toLowerCase().startsWith("stop") && plugin.leSigners.get(p.getUniqueId()) != null && message.split(" ").length == 2) {
             plugin.debug("Chat", "Stop is called with: " + message);
-            parseClears(message.split(" ")[1]);
+            parseClears(message.split(" ")[1], p.getUniqueId());
             return;
         }
-        if (message.equalsIgnoreCase("mode") && plugin.selected != null) {
+        if (message.equalsIgnoreCase("mode") && plugin.leSigners.get(p.getUniqueId()) != null) {
             plugin.debug("Chat", "mode is called, changing..");
-            plugin.selected.setMode(plugin.selected.getMode() == 1 ? 0 : 1);
-            plugin.selected.refresh();
+            plugin.leSigners.get(p.getUniqueId()).setMode(plugin.leSigners.get(p.getUniqueId()).getMode() == 1 ? 0 : 1);
+            plugin.leSigners.get(p.getUniqueId()).refresh();
             sendMessage(p, "&aYou have changed the spinner mode");
             return;
         }
-        if (trySound(message) && plugin.selected != null) {
-            plugin.selected.setSound(message.toUpperCase());
+        if (trySound(message) && plugin.leSigners.get(p.getUniqueId()) != null) {
+            plugin.leSigners.get(p.getUniqueId()).setSound(message.toUpperCase());
             plugin.debug("Chat","was called and the message is SOUND", message, "sound set");
             sendMessage(p, "&aYou have set the sound to &b" + message.toUpperCase());
             return;
         }
-        if (tryEffect(message) && plugin.selected != null) {
-            plugin.selected.setEffect(message.toUpperCase());
+        if (tryEffect(message) && plugin.leSigners.get(p.getUniqueId()) != null) {
+            plugin.leSigners.get(p.getUniqueId()).setEffect(message.toUpperCase());
             plugin.debug("Chat","was called and the message is EFFECT", message, "effect set");
             sendMessage(p, "&aYou have set the effect to &b" + message.toUpperCase());
             return;
@@ -74,11 +76,11 @@ public class SignerListener implements Listener {
         if (message.startsWith("y") || message.startsWith("yaw")) {
             String yaw = message.replace("yaw","").replace("y", "");
             plugin.debug("Chat","was called and the message yaw", yaw);
-            if (Rotation.isDouble(yaw) && plugin.selected instanceof EntitySpinner) {
+            if (Rotation.isDouble(yaw) && plugin.leSigners.get(p.getUniqueId()) instanceof EntitySpinner) {
                 if (Double.valueOf(yaw) > 360) {
                     sendMessage(p, "&aInput must be between 1 - 360 not&b" + yaw);
                 }
-                EntitySpinner spinner = (EntitySpinner) plugin.selected;
+                EntitySpinner spinner = (EntitySpinner) plugin.leSigners.get(p.getUniqueId());
                 spinner.setYawChange(Double.valueOf(yaw));
                 spinner.refresh();
                 sendMessage(p, "&aYou have set the YawChange to &b" + yaw);
@@ -89,9 +91,9 @@ public class SignerListener implements Listener {
             plugin.debug("Chat","was called and the message is numeric", message, "RPM set");
             plugin.rpm = Integer.valueOf(message);
             sendMessage(p, "&aYou have set the RPM to &b" + message);
-            if (plugin.selected != null) {
-                plugin.selected.setRpm(Integer.valueOf(message));
-                plugin.selected.refresh();
+            if (plugin.leSigners.get(p.getUniqueId()) != null) {
+                plugin.leSigners.get(p.getUniqueId()).setRpm(Integer.valueOf(message));
+                plugin.leSigners.get(p.getUniqueId()).refresh();
             }
             ev.setCancelled(true);
         } else {
@@ -100,16 +102,16 @@ public class SignerListener implements Listener {
         }
     }
 
-    public void parseClears(String message) {
+    public void parseClears(String message, UUID uuid) {
         if (message.equalsIgnoreCase("sound")) {
-            plugin.selected.setSound(null);
+            plugin.leSigners.get(uuid).setSound(null);
         }
         if (message.equalsIgnoreCase("effect")) {
-            plugin.selected.setEffect(null);
+            plugin.leSigners.get(uuid).setEffect(null);
         }
         if (message.equalsIgnoreCase("spin") || message.equalsIgnoreCase("sign") || message.equalsIgnoreCase("head") || message.equalsIgnoreCase("banner")) {
-            plugin.selected.selfDestruct();
-            plugin.selected = null;
+            plugin.leSigners.get(uuid).selfDestruct();
+            plugin.leSigners.put(uuid, null);
         }
     }
 

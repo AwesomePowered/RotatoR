@@ -5,6 +5,7 @@ import net.awesomepowered.rotator.listeners.BlockSignListener;
 import net.awesomepowered.rotator.listeners.EntitySignListener;
 import net.awesomepowered.rotator.listeners.SignerListener;
 import net.awesomepowered.rotator.types.BlockSpinner;
+import net.awesomepowered.rotator.types.EntitySpinner;
 import net.awesomepowered.rotator.utils.Spinner;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -12,14 +13,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -70,10 +70,11 @@ public final class RotatoR extends JavaPlugin {
             debug("Spinner section is null");
             return;
         }
+
         for (String s : getConfig().getConfigurationSection("spinner").getKeys(false)) {
             debug("Loading spinner", s);
             Location loc = stringToLoc(s);
-            if (Spinner.isSpinnable(loc.getBlock())) {
+            if (loc != null && Spinner.isSpinnable(loc.getBlock())) {
                 debug("It's spinnable");
                 BlockState blockState = loc.getBlock().getState();
                 int mode = getConfig().getInt("spinner."+s+".mode");
@@ -88,11 +89,35 @@ public final class RotatoR extends JavaPlugin {
                 blockSpinners.put(loc, blockSpinner);
             }
         }
+
+        for (String s : getConfig().getConfigurationSection("espinner").getKeys(false)) {
+            debug("Loading espinner", s);
+            LivingEntity livingEntity = (LivingEntity) Bukkit.getEntity(UUID.fromString(s));
+            if (livingEntity != null && Spinner.isSpinnable(livingEntity)) {
+                debug("It's espinnable");
+                String sound = getConfig().getString("espinner."+s+".sound");
+                String effect = getConfig().getString("espinner."+s+".effect");
+                int rpm = getConfig().getInt("espinner."+s+".rpm", this.rpm);
+                double yaw = getConfig().getDouble("espinner."+s+".yaw", 12.5);
+                EntitySpinner entitySpinner = new EntitySpinner(livingEntity, 0, rpm);
+                entitySpinner.setEffect(effect);
+                entitySpinner.setSound(sound);
+                entitySpinner.setYawChange(yaw);
+                debug( "Main", "Spooling up espinner id " + s, "RPM: " + rpm, "Sound: " + sound, "Effect: " + effect, "Yaw: " + yaw);
+                entitySpinner.spoolUp();
+                entitySpinners.put(UUID.fromString(s), entitySpinner);
+            }
+        }
     }
 
 
     public void saveSpinners() {
-        getConfig().set("spinner", null);
+        if (!blockSpinners.isEmpty()) {
+            getConfig().set("spinner", null);
+        }
+        if (!entitySpinners.isEmpty()) {
+            getConfig().set("espinner", null);
+        }
         for (Spinnable spinner : blockSpinners.values()) {
             String loc = locToString(spinner.getLocation());
             getConfig().set("spinner."+loc+".mode", spinner.getMode());
@@ -101,7 +126,18 @@ public final class RotatoR extends JavaPlugin {
             getConfig().set("spinner."+loc+".effect", spinner.getEffect());
             Bukkit.getScheduler().cancelTask(spinner.getTaskID());
         }
+
+        for (UUID uuid : entitySpinners.keySet()) {
+            EntitySpinner spinner = (EntitySpinner) entitySpinners.get(uuid);
+            getConfig().set("espinner."+uuid+".yaw", spinner.getYawChange());
+            getConfig().set("espinner."+uuid+".rpm", spinner.getRpm());
+            getConfig().set("espinner."+uuid+".sound", spinner.getSound());
+            getConfig().set("espinner."+uuid+".effect", spinner.getEffect());
+            Bukkit.getScheduler().cancelTask(spinner.getTaskID());
+        }
+
         blockSpinners.clear();
+        entitySpinners.clear();
         saveConfig();
     }
 

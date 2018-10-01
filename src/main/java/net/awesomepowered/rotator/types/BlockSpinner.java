@@ -12,6 +12,7 @@ import org.bukkit.block.Banner;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
+import org.bukkit.entity.Player;
 
 import java.util.logging.Level;
 
@@ -110,7 +111,10 @@ public class BlockSpinner implements Spinnable {
                 if (state.getType() != Material.SKULL) {
                     RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! A head disappeared.");
                     selfDestruct();
+                    return;
                 }
+                if (!nearbyAudience(skull.getLocation()))
+                    return;
                 if (skull.getRotation() == Rotation.getBlockFace(15)) {
                     skull.setRotation(Rotation.getBlockFace(0));
                 } else {
@@ -127,7 +131,10 @@ public class BlockSpinner implements Spinnable {
                 if (state.getType() != Material.SKULL) {
                     RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! A head disappeared.");
                     selfDestruct();
+                    return;
                 }
+                if (!nearbyAudience(skull.getLocation()))
+                    return;
                 if (skull.getRotation() == Rotation.getBlockFace(0)) {
                     skull.setRotation(Rotation.getBlockFace(15));
                 } else {
@@ -182,6 +189,17 @@ public class BlockSpinner implements Spinnable {
         if (effect != null) {
             state.getLocation().getWorld().playEffect(state.getLocation().add(0.5,0,0.5), Effect.valueOf(effect), 1);
         }
+    }
+
+    public boolean nearbyAudience(Location location)
+    {
+        return !location.getWorld().getPlayers().isEmpty();
+//        for (Player player : location.getWorld().getPlayers())
+//        {
+//            //TODO: get spigot entity-tracking-range value
+//            if (player.getLocation().distanceSquared(location) < 64 * 64)
+//                return true;
+//        }
     }
 
 }

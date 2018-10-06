@@ -12,7 +12,7 @@ import org.bukkit.entity.LivingEntity;
 public class Spinner {
 
     public static boolean isSpinnable(Material material) {
-         return (material == Material.SKULL || material == Material.SIGN_POST || material == Material.STANDING_BANNER);
+         return (material == Material.LEGACY_SKULL || material == Material.LEGACY_SIGN_POST || material == Material.LEGACY_STANDING_BANNER);
     }
 
     public static boolean isSpinnable(BlockState blockState) {

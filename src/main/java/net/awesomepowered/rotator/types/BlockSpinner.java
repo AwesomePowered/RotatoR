@@ -107,7 +107,7 @@ public class BlockSpinner implements Spinnable {
         if (mode == 0) {
             RotatoR.getMain().debug("Primary","Using mode 0");
             setTaskID(Bukkit.getScheduler().scheduleSyncRepeatingTask(RotatoR.getMain(), () -> {
-                if (state.getType() != Material.SKULL) {
+                if (state.getType() != Material.LEGACY_SKULL) {
                     RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! A head disappeared.");
                     selfDestruct();
                 }
@@ -124,7 +124,7 @@ public class BlockSpinner implements Spinnable {
         if (mode == 1) {
             RotatoR.getMain().debug("Primary","Using mode 1");
             setTaskID(Bukkit.getScheduler().scheduleSyncRepeatingTask(RotatoR.getMain(), () -> {
-                if (state.getType() != Material.SKULL) {
+                if (state.getType() != Material.LEGACY_SKULL) {
                     RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! A head disappeared.");
                     selfDestruct();
                 }

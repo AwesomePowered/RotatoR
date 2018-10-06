@@ -45,7 +45,9 @@ public final class RotatoR extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new EntitySignListener(this), this);
         checkForSigns();
         spoolSpinners();
-        signerTimer();
+        if (!getServer().getVersion().contains("git-Bukkit")) {
+            signerTimer();
+        }
     }
 
     public void onDisable() {
@@ -135,7 +137,6 @@ public final class RotatoR extends JavaPlugin {
             getConfig().set("espinner."+uuid+".effect", spinner.getEffect());
             Bukkit.getScheduler().cancelTask(spinner.getTaskID());
         }
-
         blockSpinners.clear();
         entitySpinners.clear();
         saveConfig();

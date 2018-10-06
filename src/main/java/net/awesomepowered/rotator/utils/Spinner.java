@@ -1,6 +1,5 @@
 package net.awesomepowered.rotator.utils;
 
-import org.bukkit.Material;
 import org.bukkit.block.Banner;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -11,16 +10,14 @@ import org.bukkit.entity.LivingEntity;
 
 public class Spinner {
 
-    public static boolean isSpinnable(Material material) {
-         return (material == Material.LEGACY_SKULL || material == Material.LEGACY_SIGN_POST || material == Material.LEGACY_STANDING_BANNER);
-    }
 
     public static boolean isSpinnable(BlockState blockState) {
+        //return (blockState.getBlockData() instanceof Rotatable);
         return (blockState instanceof Sign || blockState instanceof Skull || blockState instanceof Banner);
     }
 
     public static boolean isSpinnable(Block block) {
-        return isSpinnable(block.getType());
+        return isSpinnable(block.getState());
     }
 
     /*

@@ -4,5 +4,6 @@ main: net.awesomepowered.rotator.RotatoR
 authors: [LaxWasHere]
 load: POSTWORLD
 softdepend: [Multiverse-Core, SigngiS]
+api-version: 1.13
 commands:
   lesign:

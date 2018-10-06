@@ -27,8 +27,8 @@ import java.util.logging.Level;
 public final class RotatoR extends JavaPlugin {
 
     static RotatoR main;
-    public HashMap<Location, Spinnable> blockSpinners = new HashMap<>();
-    public HashMap<UUID, Spinnable> entitySpinners = new HashMap<>();
+    public Map<Location, Spinnable> blockSpinners = new HashMap<>();
+    public Map<UUID, Spinnable> entitySpinners = new HashMap<>();
     public Map<UUID, Spinnable> leSigners = new HashMap<>();
     public int rpm = 10;
     boolean debug = false;
@@ -66,60 +66,57 @@ public final class RotatoR extends JavaPlugin {
         return main;
     }
 
-
     public void spoolSpinners() {
+
         if (getConfig().getConfigurationSection("spinner") == null) {
             debug("Spinner section is null");
-            return;
-        }
-
-        for (String s : getConfig().getConfigurationSection("spinner").getKeys(false)) {
-            debug("Loading spinner", s);
-            Location loc = stringToLoc(s);
-            if (loc != null && Spinner.isSpinnable(loc.getBlock())) {
-                debug("It's spinnable");
-                BlockState blockState = loc.getBlock().getState();
-                int mode = getConfig().getInt("spinner."+s+".mode");
-                String sound = getConfig().getString("spinner."+s+".sound");
-                String effect = getConfig().getString("spinner."+s+".effect");
-                int rpm = getConfig().getInt("spinner."+s+".rpm", this.rpm);
-                BlockSpinner blockSpinner = new BlockSpinner(blockState, mode, rpm);
-                blockSpinner.setEffect(effect);
-                blockSpinner.setSound(sound);
-                debug( "Main", "Spooling up spinner at " + s, "Mode: " + mode, "RPM: " + rpm, "Sound: " + sound, "Effect: " + effect);
-                blockSpinner.spoolUp();
-                blockSpinners.put(loc, blockSpinner);
+        } else {
+            for (String s : getConfig().getConfigurationSection("spinner").getKeys(false)) {
+                debug("Loading spinner", s);
+                Location loc = stringToLoc(s);
+                if (loc != null && Spinner.isSpinnable(loc.getBlock())) {
+                    debug("It's spinnable");
+                    BlockState blockState = loc.getBlock().getState();
+                    int mode = getConfig().getInt("spinner."+s+".mode");
+                    String sound = getConfig().getString("spinner."+s+".sound");
+                    String effect = getConfig().getString("spinner."+s+".effect");
+                    int rpm = getConfig().getInt("spinner."+s+".rpm", this.rpm);
+                    BlockSpinner blockSpinner = new BlockSpinner(blockState, mode, rpm);
+                    blockSpinner.setEffect(effect);
+                    blockSpinner.setSound(sound);
+                    debug( "Main", "Spooling up spinner at " + s, "Mode: " + mode, "RPM: " + rpm, "Sound: " + sound, "Effect: " + effect);
+                    blockSpinner.spoolUp();
+                    blockSpinners.put(loc, blockSpinner);
+                }
             }
         }
 
-        for (String s : getConfig().getConfigurationSection("espinner").getKeys(false)) {
-            debug("Loading espinner", s);
-            LivingEntity livingEntity = (LivingEntity) Bukkit.getEntity(UUID.fromString(s));
-            if (livingEntity != null && Spinner.isSpinnable(livingEntity)) {
-                debug("It's espinnable");
-                String sound = getConfig().getString("espinner."+s+".sound");
-                String effect = getConfig().getString("espinner."+s+".effect");
-                int rpm = getConfig().getInt("espinner."+s+".rpm", this.rpm);
-                double yaw = getConfig().getDouble("espinner."+s+".yaw", 12.5);
-                EntitySpinner entitySpinner = new EntitySpinner(livingEntity, 0, rpm);
-                entitySpinner.setEffect(effect);
-                entitySpinner.setSound(sound);
-                entitySpinner.setYawChange(yaw);
-                debug( "Main", "Spooling up espinner id " + s, "RPM: " + rpm, "Sound: " + sound, "Effect: " + effect, "Yaw: " + yaw);
-                entitySpinner.spoolUp();
-                entitySpinners.put(UUID.fromString(s), entitySpinner);
+        if (getConfig().getConfigurationSection("espinner") == null) {
+            debug("eSpinner section is null");
+        } else {
+            for (String s : getConfig().getConfigurationSection("espinner").getKeys(false)) {
+                debug("Loading espinner", s);
+                LivingEntity livingEntity = (LivingEntity) Bukkit.getEntity(UUID.fromString(s));
+                if (livingEntity != null && Spinner.isSpinnable(livingEntity)) {
+                    debug("It's espinnable");
+                    String sound = getConfig().getString("espinner."+s+".sound");
+                    String effect = getConfig().getString("espinner."+s+".effect");
+                    int rpm = getConfig().getInt("espinner."+s+".rpm", this.rpm);
+                    double yaw = getConfig().getDouble("espinner."+s+".yaw", 12.5);
+                    EntitySpinner entitySpinner = new EntitySpinner(livingEntity, 0, rpm);
+                    entitySpinner.setEffect(effect);
+                    entitySpinner.setSound(sound);
+                    entitySpinner.setYawChange(yaw);
+                    debug( "Main", "Spooling up espinner id " + s, "RPM: " + rpm, "Sound: " + sound, "Effect: " + effect, "Yaw: " + yaw);
+                    entitySpinner.spoolUp();
+                    entitySpinners.put(UUID.fromString(s), entitySpinner);
+                }
             }
         }
+
     }
 
-
     public void saveSpinners() {
-        if (!blockSpinners.isEmpty()) {
-            getConfig().set("spinner", null);
-        }
-        if (!entitySpinners.isEmpty()) {
-            getConfig().set("espinner", null);
-        }
         for (Spinnable spinner : blockSpinners.values()) {
             String loc = locToString(spinner.getLocation());
             getConfig().set("spinner."+loc+".mode", spinner.getMode());

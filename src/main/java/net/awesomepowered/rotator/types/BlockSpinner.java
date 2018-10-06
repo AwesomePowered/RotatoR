@@ -12,21 +12,26 @@ import org.bukkit.block.Banner;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.block.Skull;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Rotatable;
 
 import java.util.logging.Level;
 
 public class BlockSpinner implements Spinnable {
 
+    private BlockData data;
     private BlockState state;
     private int mode;
     private int taskID;
     private int rpm;
     private String effect;
     private String sound;
-    private Skull skull;
+    private Rotatable rotor;
 
     public BlockSpinner(BlockState state, int mode, int rpm) {
         this.state = state;
+        this.data = state.getBlockData();
+        this.rotor = (Rotatable) data;
         this.mode = mode;
         this.rpm = rpm;
     }
@@ -95,27 +100,11 @@ public class BlockSpinner implements Spinnable {
 
     public void spoolUp() {
         RotatoR.getMain().debug("BlockSpinner","spoolUp called");
-        if (state instanceof Sign || state instanceof Banner) {
-            runLegacy();
-        } else if (state instanceof Skull) {
-            skull = (Skull) state;
-            runPrimary();
-        }
-    }
-
-    private void runPrimary() {
         if (mode == 0) {
             RotatoR.getMain().debug("Primary","Using mode 0");
             setTaskID(Bukkit.getScheduler().scheduleSyncRepeatingTask(RotatoR.getMain(), () -> {
-                if (state.getType() != Material.LEGACY_SKULL) {
-                    RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! A head disappeared.");
-                    selfDestruct();
-                }
-                if (skull.getRotation() == Rotation.getBlockFace(15)) {
-                    skull.setRotation(Rotation.getBlockFace(0));
-                } else {
-                    skull.setRotation(Rotation.getBlockFace(Rotation.getBlockFace(skull.getRotation()) + 1));
-                }
+                rotor.setRotation(Rotation.getBlockFace(Rotation.getBlockFace(rotor.getRotation()) + 1));
+                state.setBlockData(rotor);
                 state.update();
                 play();
             }, 0, rpm));
@@ -124,51 +113,8 @@ public class BlockSpinner implements Spinnable {
         if (mode == 1) {
             RotatoR.getMain().debug("Primary","Using mode 1");
             setTaskID(Bukkit.getScheduler().scheduleSyncRepeatingTask(RotatoR.getMain(), () -> {
-                if (state.getType() != Material.LEGACY_SKULL) {
-                    RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! A head disappeared.");
-                    selfDestruct();
-                }
-                if (skull.getRotation() == Rotation.getBlockFace(0)) {
-                    skull.setRotation(Rotation.getBlockFace(15));
-                } else {
-                    skull.setRotation(Rotation.getBlockFace(Rotation.getBlockFace(skull.getRotation()) - 1));
-                }
-                state.update();
-                play();
-            }, 0, rpm));
-        }
-    }
-
-    private void runLegacy() {
-        if (mode == 0) {
-            RotatoR.getMain().debug("Legacy","Using mode 0");
-            setTaskID(Bukkit.getScheduler().scheduleSyncRepeatingTask(RotatoR.getMain(), () -> {
-                if (getState().getLocation().getBlock().getType() == Material.AIR) {
-                    RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! A spinner disappeared.");
-                    selfDestruct();
-                }
-                if (state.getRawData() == 15) {
-                    state.setRawData((byte) 0);
-                } else {
-                    state.setRawData((byte) (state.getRawData()+1));
-                }
-                state.update();
-                play();
-            }, 0, rpm));
-        }
-
-        if (mode == 1) {
-            RotatoR.getMain().debug("Legacy","Using mode 1");
-            setTaskID(Bukkit.getScheduler().scheduleSyncRepeatingTask(RotatoR.getMain(), () -> {
-                if (getState().getLocation().getBlock().getType() == Material.AIR) {
-                    RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! A spinner disappeared.");
-                    selfDestruct();
-                }
-                if (state.getRawData() == 0) {
-                    state.setRawData((byte) 15);
-                } else {
-                    state.setRawData((byte) (state.getRawData()-1));
-                }
+                rotor.setRotation(Rotation.getBlockFace(Rotation.getBlockFace(rotor.getRotation()) + -1));
+                state.setBlockData(rotor);
                 state.update();
                 play();
             }, 0, rpm));

@@ -34,14 +34,12 @@ public class BlockSignListener implements Listener {
         }
 
         if (ev.getAction() == Action.LEFT_CLICK_BLOCK) {
-
             if (plugin.blockSpinners.containsKey(ev.getClickedBlock().getLocation())) {
                 plugin.debug("Interact L", "on a signed spinner, selecting.");
                 plugin.leSigners.put(p.getUniqueId(), plugin.blockSpinners.get(ev.getClickedBlock().getLocation()));
                 sendMessage(p, "&aYou have selected a signed spinner");
                 return;
             }
-
             if (Spinner.isSpinnable(ev.getClickedBlock())) { //
                 plugin.debug("Interact L","Making a BlockSpinner object");
                 BlockSpinner spinner = new BlockSpinner(ev.getClickedBlock().getState(), 0, plugin.rpm);
@@ -53,7 +51,6 @@ public class BlockSignListener implements Listener {
                 plugin.debug("Interact","tried to spool spinner");
                 return;
             }
-
         }
 
         if (ev.getAction() != Action.RIGHT_CLICK_BLOCK) {

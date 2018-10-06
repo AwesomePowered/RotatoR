@@ -1,6 +1,5 @@
 package net.awesomepowered.rotator.utils;
 
-import com.google.common.primitives.Doubles;
 import org.bukkit.block.BlockFace;
 
 public class Rotation {
@@ -40,7 +39,7 @@ public class Rotation {
             case 15:
                 return BlockFace.NORTH_NORTH_WEST;
             default:
-                throw new AssertionError(rotation);
+                return BlockFace.NORTH;
         }
     }
 
@@ -79,7 +78,7 @@ public class Rotation {
             case NORTH_NORTH_WEST:
                 return 15;
             default:
-                throw new IllegalArgumentException("Invalid BlockFace rotation: " + rotation);
+                return 0;
         }
     }
 

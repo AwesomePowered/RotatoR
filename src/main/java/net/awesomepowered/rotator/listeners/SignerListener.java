@@ -45,7 +45,6 @@ public class SignerListener implements Listener {
         if (message.equalsIgnoreCase("exit")) {
             plugin.debug("Chat","exit was called. Player no longer a signer");
             plugin.leSigners.remove(p.getUniqueId());
-            plugin.leSigners.put(p.getUniqueId(), null);
             sendMessage(p, "&cYou are no longer an active signer");
             return;
         }

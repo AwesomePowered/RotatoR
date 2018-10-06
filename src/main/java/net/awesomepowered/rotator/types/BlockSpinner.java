@@ -122,7 +122,7 @@ public class BlockSpinner implements Spinnable {
                     RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! A spinner disappeared.");
                     selfDestruct();
                 }
-                rotor.setRotation(Rotation.getBlockFace(Rotation.getBlockFace(rotor.getRotation()) + -1));
+                rotor.setRotation(Rotation.getBlockFace(Rotation.getBlockFace(rotor.getRotation()) -1));
                 state.setBlockData(rotor);
                 state.update();
                 play();

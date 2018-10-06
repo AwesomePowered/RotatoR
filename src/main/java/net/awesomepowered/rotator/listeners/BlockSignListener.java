@@ -40,7 +40,7 @@ public class BlockSignListener implements Listener {
                 sendMessage(p, "&aYou have selected a signed spinner");
                 return;
             }
-            if (Spinner.isSpinnable(ev.getClickedBlock())) { //
+            if (Spinner.isSpinnable(ev.getClickedBlock())) {
                 plugin.debug("Interact L","Making a BlockSpinner object");
                 BlockSpinner spinner = new BlockSpinner(ev.getClickedBlock().getState(), 0, plugin.rpm);
                 plugin.blockSpinners.put(ev.getClickedBlock().getLocation(), spinner);

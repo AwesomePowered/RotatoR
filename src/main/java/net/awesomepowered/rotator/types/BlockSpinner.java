@@ -3,6 +3,7 @@ package net.awesomepowered.rotator.types;
 import net.awesomepowered.rotator.RotatoR;
 import net.awesomepowered.rotator.Spinnable;
 import net.awesomepowered.rotator.utils.Rotation;
+import net.awesomepowered.rotator.utils.Spinner;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -103,6 +104,10 @@ public class BlockSpinner implements Spinnable {
         if (mode == 0) {
             RotatoR.getMain().debug("Primary","Using mode 0");
             setTaskID(Bukkit.getScheduler().scheduleSyncRepeatingTask(RotatoR.getMain(), () -> {
+                if (!Spinner.isSpinnable(getState())) {
+                    RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! A spinner disappeared.");
+                    selfDestruct();
+                }
                 rotor.setRotation(Rotation.getBlockFace(Rotation.getBlockFace(rotor.getRotation()) + 1));
                 state.setBlockData(rotor);
                 state.update();
@@ -113,6 +118,10 @@ public class BlockSpinner implements Spinnable {
         if (mode == 1) {
             RotatoR.getMain().debug("Primary","Using mode 1");
             setTaskID(Bukkit.getScheduler().scheduleSyncRepeatingTask(RotatoR.getMain(), () -> {
+                if (!Spinner.isSpinnable(getState())) {
+                    RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! A spinner disappeared.");
+                    selfDestruct();
+                }
                 rotor.setRotation(Rotation.getBlockFace(Rotation.getBlockFace(rotor.getRotation()) + -1));
                 state.setBlockData(rotor);
                 state.update();

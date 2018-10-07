@@ -117,6 +117,17 @@ public final class RotatoR extends JavaPlugin {
     }
 
     public void saveSpinners() {
+        /*
+        Sets the entries to null to remove dead/stopped spinners.
+        Then write the active ones over.
+         */
+        if (!blockSpinners.isEmpty()) {
+            getConfig().set("spinner", null);
+        }
+        if (!entitySpinners.isEmpty()) {
+            getConfig().set("espinner", null);
+        }
+
         for (Spinnable spinner : blockSpinners.values()) {
             String loc = locToString(spinner.getLocation());
             getConfig().set("spinner."+loc+".mode", spinner.getMode());
@@ -134,6 +145,7 @@ public final class RotatoR extends JavaPlugin {
             getConfig().set("espinner."+uuid+".effect", spinner.getEffect());
             Bukkit.getScheduler().cancelTask(spinner.getTaskID());
         }
+
         blockSpinners.clear();
         entitySpinners.clear();
         saveConfig();

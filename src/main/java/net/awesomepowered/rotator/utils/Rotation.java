@@ -6,6 +6,8 @@ public class Rotation {
 
     public static BlockFace getBlockFace(int rotation) {
         switch (rotation) {
+            case -1:
+                return BlockFace.NORTH_NORTH_WEST;
             case 0:
                 return BlockFace.NORTH;
             case 1:

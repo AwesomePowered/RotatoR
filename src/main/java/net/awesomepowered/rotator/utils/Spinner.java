@@ -1,5 +1,6 @@
 package net.awesomepowered.rotator.utils;
 
+import org.bukkit.Location;
 import org.bukkit.block.Banner;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -18,6 +19,10 @@ public class Spinner {
 
     public static boolean isSpinnable(Block block) {
         return isSpinnable(block.getState());
+    }
+
+    public static boolean isSpinnable(Location loc) {
+        return isSpinnable(loc.getBlock());
     }
 
     /*

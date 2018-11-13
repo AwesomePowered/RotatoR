@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.block.Banner;
 import org.bukkit.block.BlockState;
@@ -27,6 +28,7 @@ public class BlockSpinner implements Spinnable {
     private int rpm;
     private String effect;
     private String sound;
+    private String particle;
     private Rotatable rotor;
 
     public BlockSpinner(BlockState state, int mode, int rpm) {
@@ -81,6 +83,11 @@ public class BlockSpinner implements Spinnable {
         this.sound = sound;
     }
 
+    @Override
+    public void setParticle(String particle) {
+        this.particle = particle;
+    }
+
     public String getEffect() {
         return this.effect;
     }
@@ -89,12 +96,18 @@ public class BlockSpinner implements Spinnable {
         return this.sound;
     }
 
+    public String getParticle() {
+        return this.particle;
+    }
+
     public void selfDestruct() {
+        RotatoR.getMain().debug("SelfDestruct: " + taskID);
         Bukkit.getScheduler().cancelTask(taskID);
         RotatoR.getMain().blockSpinners.remove(state.getLocation());
     }
 
     public void refresh() {
+        RotatoR.getMain().debug("Refresh: " + taskID);
         Bukkit.getScheduler().cancelTask(taskID);
         spoolUp();
     }
@@ -104,7 +117,7 @@ public class BlockSpinner implements Spinnable {
         if (mode == 0) {
             RotatoR.getMain().debug("Primary","Using mode 0");
             setTaskID(Bukkit.getScheduler().scheduleSyncRepeatingTask(RotatoR.getMain(), () -> {
-                if (!Spinner.isSpinnable(getState())) {
+                if (!Spinner.isSpinnable(getState().getLocation())) {
                     RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! A spinner disappeared.");
                     selfDestruct();
                 }
@@ -118,7 +131,7 @@ public class BlockSpinner implements Spinnable {
         if (mode == 1) {
             RotatoR.getMain().debug("Primary","Using mode 1");
             setTaskID(Bukkit.getScheduler().scheduleSyncRepeatingTask(RotatoR.getMain(), () -> {
-                if (!Spinner.isSpinnable(getState())) {
+                if (!Spinner.isSpinnable(getState().getLocation())) {
                     RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! A spinner disappeared.");
                     selfDestruct();
                 }
@@ -128,6 +141,7 @@ public class BlockSpinner implements Spinnable {
                 play();
             }, 0, rpm));
         }
+        RotatoR.getMain().debug("taskID: " + taskID);
     }
 
     public void play() {
@@ -136,6 +150,9 @@ public class BlockSpinner implements Spinnable {
         }
         if (effect != null) {
             state.getLocation().getWorld().playEffect(state.getLocation().add(0.5,0,0.5), Effect.valueOf(effect), 1);
+        }
+        if (particle != null) {
+            state.getLocation().getWorld().spawnParticle(Particle.valueOf(particle), state.getLocation().add(0.5,0,0.5), 1);
         }
     }
 

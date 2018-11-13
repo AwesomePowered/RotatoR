@@ -22,9 +22,13 @@ public interface Spinnable {
 
      String getSound();
 
+     String getParticle();
+
      void setEffect(String effect);
 
      void setSound(String sound);
+
+     void setParticle(String particle);
 
      void refresh();
 

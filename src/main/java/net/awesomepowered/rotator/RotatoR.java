@@ -29,9 +29,10 @@ public final class RotatoR extends JavaPlugin {
     static RotatoR main;
     public Map<Location, Spinnable> blockSpinners = new HashMap<>();
     public Map<UUID, Spinnable> entitySpinners = new HashMap<>();
-    public Map<UUID, Spinnable> leSigners = new HashMap<>();
+    public Map<UUID, Spinnable> leSigners = new HashMap<>(); //todo make lesigner object instead
     public int rpm = 10;
     boolean debug = false;
+    public static boolean isPremium = false;
 
     @Override
     public void onEnable() {
@@ -45,6 +46,7 @@ public final class RotatoR extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new EntitySignListener(this), this);
         checkForSigns();
         spoolSpinners();
+        checkPremium();
         if (!getServer().getVersion().contains("git-Bukkit")) {
             signerTimer();
         }
@@ -80,11 +82,13 @@ public final class RotatoR extends JavaPlugin {
                     int mode = getConfig().getInt("spinner."+s+".mode");
                     String sound = getConfig().getString("spinner."+s+".sound");
                     String effect = getConfig().getString("spinner."+s+".effect");
+                    String particle = getConfig().getString("spinner."+s+".particle");
                     int rpm = getConfig().getInt("spinner."+s+".rpm", this.rpm);
                     BlockSpinner blockSpinner = new BlockSpinner(blockState, mode, rpm);
                     blockSpinner.setEffect(effect);
                     blockSpinner.setSound(sound);
-                    debug( "Main", "Spooling up spinner at " + s, "Mode: " + mode, "RPM: " + rpm, "Sound: " + sound, "Effect: " + effect);
+                    blockSpinner.setParticle(particle);
+                    debug( "Main", "Spooling up spinner at " + s, "Mode: " + mode, "RPM: " + rpm, "Sound: " + sound, "Effect: " + effect, "Particle: " + particle);
                     blockSpinner.spoolUp();
                     blockSpinners.put(loc, blockSpinner);
                 }
@@ -101,13 +105,15 @@ public final class RotatoR extends JavaPlugin {
                     debug("It's espinnable");
                     String sound = getConfig().getString("espinner."+s+".sound");
                     String effect = getConfig().getString("espinner."+s+".effect");
+                    String particle = getConfig().getString("espinner."+s+".particle");
                     int rpm = getConfig().getInt("espinner."+s+".rpm", this.rpm);
                     double yaw = getConfig().getDouble("espinner."+s+".yaw", 12.5);
                     EntitySpinner entitySpinner = new EntitySpinner(livingEntity, 0, rpm);
                     entitySpinner.setEffect(effect);
                     entitySpinner.setSound(sound);
+                    entitySpinner.setParticle(particle);
                     entitySpinner.setYawChange(yaw);
-                    debug( "Main", "Spooling up espinner id " + s, "RPM: " + rpm, "Sound: " + sound, "Effect: " + effect, "Yaw: " + yaw);
+                    debug( "Main", "Spooling up espinner id " + s, "RPM: " + rpm, "Sound: " + sound, "Effect: " + effect, "Particle: " + particle, "Yaw: " + yaw);
                     entitySpinner.spoolUp();
                     entitySpinners.put(UUID.fromString(s), entitySpinner);
                 }
@@ -134,6 +140,7 @@ public final class RotatoR extends JavaPlugin {
             getConfig().set("spinner."+loc+".rpm", spinner.getRpm());
             getConfig().set("spinner."+loc+".sound", spinner.getSound());
             getConfig().set("spinner."+loc+".effect", spinner.getEffect());
+            getConfig().set("spinner."+loc+".particle", spinner.getParticle());
             Bukkit.getScheduler().cancelTask(spinner.getTaskID());
         }
 
@@ -143,6 +150,7 @@ public final class RotatoR extends JavaPlugin {
             getConfig().set("espinner."+uuid+".rpm", spinner.getRpm());
             getConfig().set("espinner."+uuid+".sound", spinner.getSound());
             getConfig().set("espinner."+uuid+".effect", spinner.getEffect());
+            getConfig().set("espinner."+uuid+".particle", spinner.getParticle());
             Bukkit.getScheduler().cancelTask(spinner.getTaskID());
         }
 
@@ -165,10 +173,6 @@ public final class RotatoR extends JavaPlugin {
         return new Location(Bukkit.getWorld(loc[0]),Double.valueOf(loc[1]),Double.valueOf(loc[2]),Double.valueOf(loc[3]));
     }
 
-    public void debug(Object... o) {
-        if (debug) getLogger().log(Level.INFO, Arrays.toString(o));
-    }
-
     public void signerTimer() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
             for (UUID uuid : leSigners.keySet()) {
@@ -180,5 +184,14 @@ public final class RotatoR extends JavaPlugin {
                 }
             }
         }, 20, 20);
+    }
+
+    public void checkPremium() {
+        isPremium = (getDescription().getVersion().contains("P") || getConfig().getBoolean("premium", false));
+        debug("Premium: ", isPremium);
+    }
+
+    public void debug(Object... o) {
+        if (debug) getLogger().log(Level.INFO, Arrays.toString(o));
     }
 }

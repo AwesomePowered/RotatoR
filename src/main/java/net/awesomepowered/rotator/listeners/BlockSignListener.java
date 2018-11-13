@@ -3,6 +3,7 @@ package net.awesomepowered.rotator.listeners;
 import net.awesomepowered.rotator.RotatoR;
 import net.awesomepowered.rotator.types.BlockSpinner;
 import net.awesomepowered.rotator.utils.Spinner;
+import net.awesomepowered.rotator.utils.Windows;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,15 +30,22 @@ public class BlockSignListener implements Listener {
         ev.setCancelled(true);
 
         if (ev.getClickedBlock() == null) {
-            plugin.debug("Interact","was called but block is not a SIGN_POST/SKULL/BAN");
+            plugin.debug("Interact","was called but block is not spinnable");
             return;
         }
 
         if (ev.getAction() == Action.LEFT_CLICK_BLOCK) {
             if (plugin.blockSpinners.containsKey(ev.getClickedBlock().getLocation())) {
-                plugin.debug("Interact L", "on a signed spinner, selecting.");
-                plugin.leSigners.put(p.getUniqueId(), plugin.blockSpinners.get(ev.getClickedBlock().getLocation()));
-                sendMessage(p, "&aYou have selected a signed spinner");
+                if (p.isSneaking() && RotatoR.isPremium) {
+                    plugin.debug("Interact L", "on a signed spinner, GUI.");
+                    plugin.leSigners.put(p.getUniqueId(), plugin.blockSpinners.get(ev.getClickedBlock().getLocation()));
+                    new Windows(plugin, p).openSpinnerMenu();
+                    sendMessage(p, "&aOpening spinner menu");
+                } else {
+                    plugin.debug("Interact L", "on a signed spinner, selecting.");
+                    plugin.leSigners.put(p.getUniqueId(), plugin.blockSpinners.get(ev.getClickedBlock().getLocation()));
+                    sendMessage(p, "&aYou have selected a signed spinner");
+                }
                 return;
             }
             if (Spinner.isSpinnable(ev.getClickedBlock())) {

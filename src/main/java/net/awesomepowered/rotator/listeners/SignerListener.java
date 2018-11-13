@@ -3,9 +3,11 @@ package net.awesomepowered.rotator.listeners;
 import net.awesomepowered.rotator.RotatoR;
 import net.awesomepowered.rotator.types.EntitySpinner;
 import net.awesomepowered.rotator.utils.Rotation;
+import net.awesomepowered.rotator.utils.Windows;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,8 +24,6 @@ public class SignerListener implements Listener {
         this.plugin = rotatoR;
     }
 
-
-
     @EventHandler
     public void onChat(AsyncPlayerChatEvent ev) {
         if (!plugin.leSigners.containsKey(ev.getPlayer().getUniqueId())) {
@@ -33,19 +33,16 @@ public class SignerListener implements Listener {
         String message = ev.getMessage();
         Player p = ev.getPlayer();
         ev.setCancelled(true);
-        if (message.equalsIgnoreCase("@test")) {
-            plugin.debug("Damage", "Making an EntitySpinner object");
-            EntitySpinner spinner = new EntitySpinner(p, 0, plugin.rpm);
-            spinner.spoolUp();
-            plugin.leSigners.put(p.getUniqueId(), spinner);
-            sendMessage(p, "&aYou spun urself");
-            return;
-        }
-
         if (message.equalsIgnoreCase("exit")) {
             plugin.debug("Chat","exit was called. Player no longer a signer");
             plugin.leSigners.remove(p.getUniqueId());
             sendMessage(p, "&cYou are no longer an active signer");
+            return;
+        }
+        if (message.equalsIgnoreCase("gui") && RotatoR.isPremium) {
+            plugin.debug("Chat","GUI was called. Opening main menu");
+            sendMessage(p, "&aOpening RotatoR menu");
+            new Windows(plugin, p).openRotatorsMainMenu();
             return;
         }
         if (message.toLowerCase().startsWith("stop") && plugin.leSigners.get(p.getUniqueId()) != null && message.split(" ").length == 2) {
@@ -70,6 +67,12 @@ public class SignerListener implements Listener {
             plugin.leSigners.get(p.getUniqueId()).setEffect(message.toUpperCase());
             plugin.debug("Chat","was called and the message is EFFECT", message, "effect set");
             sendMessage(p, "&aYou have set the effect to &b" + message.toUpperCase());
+            return;
+        }
+        if (tryParticle(message) && plugin.leSigners.get(p.getUniqueId()) != null) {
+            plugin.leSigners.get(p.getUniqueId()).setEffect(message.toUpperCase());
+            plugin.debug("Chat","was called and the message is PARTICLE", message, "particle set");
+            sendMessage(p, "&aYou have set the particle to &b" + message.toUpperCase());
             return;
         }
         if (message.startsWith("y") || message.startsWith("yaw")) {
@@ -108,6 +111,9 @@ public class SignerListener implements Listener {
         if (message.equalsIgnoreCase("effect")) {
             plugin.leSigners.get(uuid).setEffect(null);
         }
+        if (message.equalsIgnoreCase("particle")) {
+            plugin.leSigners.get(uuid).setParticle(null);
+        }
         if (message.equalsIgnoreCase("spin") || message.equalsIgnoreCase("sign") || message.equalsIgnoreCase("head") || message.equalsIgnoreCase("banner")) {
             plugin.leSigners.get(uuid).selfDestruct();
             plugin.leSigners.put(uuid, null);
@@ -126,6 +132,15 @@ public class SignerListener implements Listener {
     public boolean tryEffect(String effect) {
         try {
             Effect.valueOf(effect.toUpperCase());
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    public boolean tryParticle(String particle) {
+        try {
+            Particle.valueOf(particle.toUpperCase());
             return true;
         } catch (IllegalArgumentException e) {
             return false;

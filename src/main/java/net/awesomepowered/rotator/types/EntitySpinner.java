@@ -6,6 +6,7 @@ import net.awesomepowered.rotator.Spinnable;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -20,6 +21,7 @@ public class EntitySpinner implements Spinnable {
     private int rpm;
     private String effect;
     private String sound;
+    private String particle;
     private double yawChange = 15; //lower = slower turn
     private AtomicDouble trouble = new AtomicDouble();
 
@@ -82,12 +84,20 @@ public class EntitySpinner implements Spinnable {
         return this.sound;
     }
 
+    public String getParticle() {
+        return this.particle;
+    }
+
     public void setEffect(String effect) {
         this.effect = effect;
     }
 
     public void setSound(String sound) {
         this.sound = sound;
+    }
+
+    public void setParticle(String particle) {
+        this.particle = particle;
     }
 
     public void refresh() {
@@ -121,6 +131,9 @@ public class EntitySpinner implements Spinnable {
         }
         if (effect != null) {
             entity.getLocation().getWorld().playEffect(entity.getLocation().add(0.5,0,0.5), Effect.valueOf(effect), 1);
+        }
+        if (particle != null) {
+            entity.getLocation().getWorld().spawnParticle(Particle.valueOf(particle), entity.getLocation().add(0.5,0,0.5), 1);
         }
     }
 }

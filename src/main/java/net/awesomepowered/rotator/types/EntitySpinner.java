@@ -3,6 +3,7 @@ package net.awesomepowered.rotator.types;
 import com.google.common.util.concurrent.AtomicDouble;
 import net.awesomepowered.rotator.RotatoR;
 import net.awesomepowered.rotator.Spinnable;
+import net.awesomepowered.rotator.event.RotatorSpinEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -115,6 +116,11 @@ public class EntitySpinner implements Spinnable {
         Location constant = entity.getLocation();
         RotatoR.getMain().debug("eSpool","Using mode 0");
         setTaskID(Bukkit.getScheduler().scheduleSyncRepeatingTask(RotatoR.getMain(), () -> {
+            RotatorSpinEvent rotatorSpinEvent = new RotatorSpinEvent(this);
+            Bukkit.getServer().getPluginManager().callEvent(rotatorSpinEvent);
+            if (rotatorSpinEvent.isCancelled()) {
+                return;
+            }
             if (entity.isDead()) {
                 RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! An entity is ded!");
                 selfDestruct();

@@ -53,15 +53,11 @@ public class BlockSignListener implements Listener {
                 plugin.debug("Interact L","Making a BlockSpinner object");
                 boolean stateNeedsUpdate = true;
                 BlockState blockState;
-                try
-                {
-                    blockState = ev.getClickedBlock().getState(false);
-                    stateNeedsUpdate = false;
-                }
-                catch (Throwable rock)
-                {
-                    blockState = ev.getClickedBlock().getState();
-                }
+                try                                                         {
+                    blockState = ev.getClickedBlock().getState(false)       ;
+                    stateNeedsUpdate = false;                               }
+                catch (Throwable rock)                                      {
+                    blockState = ev.getClickedBlock().getState()            ;}
                 BlockSpinner spinner = new BlockSpinner(blockState, 0, plugin.rpm, stateNeedsUpdate);
                 plugin.blockSpinners.put(ev.getClickedBlock().getLocation(), spinner);
                 spinner.setMode((p.isSneaking()) ? 1 : 0);

@@ -24,6 +24,7 @@ public class BlockSpinner implements Spinnable {
 
     private BlockData data;
     private BlockState state;
+    private boolean stateNeedsUpdate;
     private int mode;
     private int taskID;
     private int rpm;
@@ -32,12 +33,13 @@ public class BlockSpinner implements Spinnable {
     private String particle;
     private Rotatable rotor;
 
-    public BlockSpinner(BlockState state, int mode, int rpm) {
+    public BlockSpinner(BlockState state, int mode, int rpm, boolean update) {
         this.state = state;
         this.data = state.getBlockData();
         this.rotor = (Rotatable) data;
         this.mode = mode;
         this.rpm = rpm;
+        this.stateNeedsUpdate = update;
     }
 
     public Location getLocation() {
@@ -129,7 +131,8 @@ public class BlockSpinner implements Spinnable {
                 }
                 rotor.setRotation(Rotation.getBlockFace(Rotation.getBlockFace(rotor.getRotation()) + 1));
                 state.setBlockData(rotor);
-                state.update();
+                if (stateNeedsUpdate)
+                    state.update();
                 play();
             }, 0, rpm));
         }
@@ -148,7 +151,8 @@ public class BlockSpinner implements Spinnable {
                 }
                 rotor.setRotation(Rotation.getBlockFace(Rotation.getBlockFace(rotor.getRotation()) -1));
                 state.setBlockData(rotor);
-                state.update();
+                if (stateNeedsUpdate)
+                    state.update();
                 play();
             }, 0, rpm));
         }

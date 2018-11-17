@@ -78,13 +78,23 @@ public final class RotatoR extends JavaPlugin {
                 Location loc = stringToLoc(s);
                 if (loc != null && Spinner.isSpinnable(loc.getBlock())) {
                     debug("It's spinnable");
-                    BlockState blockState = loc.getBlock().getState();
+                    boolean stateNeedsUpdate = true;
+                    BlockState blockState;
+                    try
+                    {
+                        blockState = loc.getBlock().getState(false);
+                        stateNeedsUpdate = false;
+                    }
+                    catch (Throwable rock)
+                    {
+                        blockState = loc.getBlock().getState();
+                    }
                     int mode = getConfig().getInt("spinner."+s+".mode");
                     String sound = getConfig().getString("spinner."+s+".sound");
                     String effect = getConfig().getString("spinner."+s+".effect");
                     String particle = getConfig().getString("spinner."+s+".particle");
                     int rpm = getConfig().getInt("spinner."+s+".rpm", this.rpm);
-                    BlockSpinner blockSpinner = new BlockSpinner(blockState, mode, rpm);
+                    BlockSpinner blockSpinner = new BlockSpinner(blockState, mode, rpm, stateNeedsUpdate);
                     blockSpinner.setEffect(effect);
                     blockSpinner.setSound(sound);
                     blockSpinner.setParticle(particle);

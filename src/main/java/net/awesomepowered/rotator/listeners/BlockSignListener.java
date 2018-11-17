@@ -5,6 +5,7 @@ import net.awesomepowered.rotator.types.BlockSpinner;
 import net.awesomepowered.rotator.utils.Spinner;
 import net.awesomepowered.rotator.utils.Windows;
 import org.bukkit.ChatColor;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -50,7 +51,18 @@ public class BlockSignListener implements Listener {
             }
             if (Spinner.isSpinnable(ev.getClickedBlock())) {
                 plugin.debug("Interact L","Making a BlockSpinner object");
-                BlockSpinner spinner = new BlockSpinner(ev.getClickedBlock().getState(), 0, plugin.rpm);
+                boolean stateNeedsUpdate = true;
+                BlockState blockState;
+                try
+                {
+                    blockState = ev.getClickedBlock().getState(false);
+                    stateNeedsUpdate = false;
+                }
+                catch (Throwable rock)
+                {
+                    blockState = ev.getClickedBlock().getState();
+                }
+                BlockSpinner spinner = new BlockSpinner(blockState, 0, plugin.rpm, stateNeedsUpdate);
                 plugin.blockSpinners.put(ev.getClickedBlock().getLocation(), spinner);
                 spinner.setMode((p.isSneaking()) ? 1 : 0);
                 spinner.spoolUp();

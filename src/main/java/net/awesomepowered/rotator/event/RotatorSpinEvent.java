@@ -20,6 +20,10 @@ public class RotatorSpinEvent extends Event implements Cancellable {
         return panHandlers;
     }
 
+    public static HandlerList getHandlerList() {
+        return panHandlers;
+    }
+
     public Spinnable getRotator() {
         return rotator;
     }

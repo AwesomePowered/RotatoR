@@ -6,12 +6,14 @@ import de.themoep.inventorygui.InventoryGui;
 import de.themoep.inventorygui.StaticGuiElement;
 import net.awesomepowered.rotator.RotatoR;
 import net.awesomepowered.rotator.Spinnable;
+import net.awesomepowered.rotator.types.EntitySpinner;
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SpawnEggMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,6 +96,23 @@ public class Windows {
                         return true;
                     },
                     "&bClick to select spinner"
+            ));
+        }
+
+        for (Spinnable spinner : plugin.entitySpinners.values()) {
+            EntitySpinner entitySpinner = (EntitySpinner) spinner;
+            ItemStack egg = new ItemStack(Material.EGG);
+            try {
+                egg = new ItemStack(Material.valueOf(entitySpinner.getEntity().getType().name()+"_SPAWN_EGG"));
+            } catch (Exception ignored) {}
+            group.addElement(new StaticGuiElement('x',
+                    egg,
+                    click -> {
+                        setSpinnable(spinner);
+                        openMainMenu();
+                        return true;
+                    },
+                    "&bSelect " + entitySpinner.getEntity().getName() + " spinner"
             ));
         }
 

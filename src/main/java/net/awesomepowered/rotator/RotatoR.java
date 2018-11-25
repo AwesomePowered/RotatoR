@@ -9,6 +9,7 @@ import net.awesomepowered.rotator.types.EntitySpinner;
 import net.awesomepowered.rotator.utils.Spinner;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -22,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 public final class RotatoR extends JavaPlugin {
@@ -33,6 +35,7 @@ public final class RotatoR extends JavaPlugin {
     public int rpm = 10;
     boolean debug = false;
     public static boolean isPremium = false;
+    private Metrics metrics;
 
     @Override
     public void onEnable() {
@@ -44,9 +47,11 @@ public final class RotatoR extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new SignerListener(this), this);
         Bukkit.getPluginManager().registerEvents(new BlockSignListener(this), this);
         Bukkit.getPluginManager().registerEvents(new EntitySignListener(this), this);
+        checkPremium();
         checkForSigns();
         spoolSpinners();
-        checkPremium();
+        metrics = new Metrics(this);
+        metrics.addCustomChart(new Metrics.SimplePie("premium", () -> String.valueOf(isPremium)));
         if (!getServer().getVersion().contains("git-Bukkit")) {
             signerTimer();
         }

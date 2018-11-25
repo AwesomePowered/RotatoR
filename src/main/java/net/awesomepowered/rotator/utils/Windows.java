@@ -112,7 +112,7 @@ public class Windows {
                         openMainMenu();
                         return true;
                     },
-                    "&bSelect " + entitySpinner.getEntity().getName() + " spinner"
+                    "&bSelect " + entitySpinner.getEntity().getName() + " eSpinner"
             ));
         }
 

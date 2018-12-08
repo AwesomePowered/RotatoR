@@ -18,7 +18,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.inventivetalent.update.spigot.SpigotUpdater;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +54,7 @@ public final class RotatoR extends JavaPlugin {
         spoolSpinners();
         metrics = new Metrics(this);
         metrics.addCustomChart(new Metrics.SimplePie("premium", () -> String.valueOf(isPremium)));
+        updateCheck();
         if (!getServer().getVersion().contains("git-Bukkit")) {
             signerTimer();
         }
@@ -194,6 +197,14 @@ public final class RotatoR extends JavaPlugin {
     public void checkPremium() {
         isPremium = (getDescription().getVersion().contains("P") || getConfig().getBoolean("premium", false));
         debug("Premium: ", isPremium);
+    }
+
+    public void updateCheck() {
+        try {
+            new SpigotUpdater(this, 61960);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void debug(Object... o) {

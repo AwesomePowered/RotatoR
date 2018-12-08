@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 
@@ -27,7 +28,6 @@ public class Windows {
         this.plugin = plugin;
         this.p = player;
     }
-
 
     public void openMainMenu() {
         if (getSpinner() == null) {
@@ -91,8 +91,13 @@ public class Windows {
             group.addElement(new StaticGuiElement('x',
                     new ItemStack(spinner.getLocation().getBlock().getType(), 1),
                     click -> {
-                        setSpinnable(spinner);
-                        openMainMenu();
+                        ClickType type = click.getType();
+                        if (type.isRightClick()) {
+                            p.teleport(spinner.getLocation());
+                        }  else {
+                            setSpinnable(spinner);
+                            openMainMenu();
+                        }
                         return true;
                     },
                     "&bClick to select spinner"
@@ -108,8 +113,13 @@ public class Windows {
             group.addElement(new StaticGuiElement('x',
                     egg,
                     click -> {
-                        setSpinnable(spinner);
-                        openMainMenu();
+                        ClickType type = click.getType();
+                        if (type.isRightClick()) {
+                            p.teleport(spinner.getLocation());
+                        }  else {
+                            setSpinnable(spinner);
+                            openMainMenu();
+                        }
                         return true;
                     },
                     "&bSelect " + entitySpinner.getEntity().getName() + " eSpinner"

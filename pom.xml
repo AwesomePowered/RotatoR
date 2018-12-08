@@ -6,7 +6,7 @@
 
     <groupId>net.awesomepowered</groupId>
     <artifactId>RotatoR</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <packaging>jar</packaging>
 
     <name>RotatoR</name>
@@ -84,6 +84,11 @@
             <artifactId>spigot-api</artifactId>
             <version>1.13-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.inventivetalent.update</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>de.themoep</groupId>

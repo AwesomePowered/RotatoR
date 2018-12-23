@@ -8,15 +8,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Rotation;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.logging.Level;
 
 public class EntitySpinner implements Spinnable {
 
-    private LivingEntity entity;
+    private Entity entity;
     private int mode;
     private int taskID;
     private int rpm;
@@ -26,18 +28,21 @@ public class EntitySpinner implements Spinnable {
     private double yawChange = 15; //lower = slower turn
     private AtomicDouble trouble = new AtomicDouble();
 
-    public EntitySpinner(LivingEntity ent, int mode, int rpm) {
+    public EntitySpinner(Entity ent, int mode, int rpm) {
         this.entity = ent;
         this.mode = mode;
         this.rpm = rpm;
-        entity.setAI(false);
+        if (ent instanceof LivingEntity) {
+            LivingEntity livingEntity = (LivingEntity) ent;
+            livingEntity.setAI(false);
+        }
     }
 
     public Entity getEntity() {
         return entity;
     }
 
-    public void setEntity(LivingEntity entity) {
+    public void setEntity(Entity entity) {
         this.entity = entity;
     }
 
@@ -59,6 +64,7 @@ public class EntitySpinner implements Spinnable {
 
     public void setMode(int mode) {
         setYawChange(getYawChange() * -1);
+        this.mode = mode;
     }
 
     public int getTaskID() {
@@ -107,28 +113,56 @@ public class EntitySpinner implements Spinnable {
     }
 
     public void selfDestruct() {
-        entity.setAI(true);
+        if (getEntity() instanceof LivingEntity) {
+            LivingEntity livingEntity = (LivingEntity) getEntity();
+            livingEntity.setAI(true);
+        }
         Bukkit.getScheduler().cancelTask(taskID);
-        RotatoR.getMain().blockSpinners.remove(entity.getLocation());
+        RotatoR.getMain().entitySpinners.remove(entity.getUniqueId());
     }
 
     public void spoolUp() {
         Location constant = entity.getLocation();
         RotatoR.getMain().debug("eSpool","Using mode 0");
-        setTaskID(Bukkit.getScheduler().scheduleSyncRepeatingTask(RotatoR.getMain(), () -> {
-            RotatorSpinEvent rotatorSpinEvent = new RotatorSpinEvent(this);
-            Bukkit.getServer().getPluginManager().callEvent(rotatorSpinEvent);
-            if (rotatorSpinEvent.isCancelled()) {
-                return;
-            }
-            if (entity.isDead()) {
-                RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! An entity is ded!");
-                selfDestruct();
-            }
-            constant.setYaw((float) trouble.getAndAdd(yawChange) % 360); //shhh
-            entity.teleport(constant);
-            play();
-        }, 0, rpm));
+        if (entity instanceof ItemFrame) {
+            RotatoR.getMain().debug("eSpool", "Entity is ItemFrame");
+            setTaskID(Bukkit.getScheduler().scheduleSyncRepeatingTask(RotatoR.getMain(), () -> {
+                RotatorSpinEvent rotatorSpinEvent = new RotatorSpinEvent(this);
+                Bukkit.getServer().getPluginManager().callEvent(rotatorSpinEvent);
+                if (rotatorSpinEvent.isCancelled()) {
+                    return;
+                }
+                if (entity.isDead()) {
+                    RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! An entity is ded!");
+                    selfDestruct();
+                }
+                ItemFrame itemFrame = (ItemFrame) entity;
+                if (mode == 0) {
+                    itemFrame.setRotation(itemFrame.getRotation().rotateClockwise());
+                } else {
+                    itemFrame.setRotation(itemFrame.getRotation().rotateCounterClockwise());
+                }
+                play();
+            }, 0, rpm));
+        } else {
+            RotatoR.getMain().debug("eSpool", "Entity is LivingEntity");
+            setTaskID(Bukkit.getScheduler().scheduleSyncRepeatingTask(RotatoR.getMain(), () -> {
+                RotatorSpinEvent rotatorSpinEvent = new RotatorSpinEvent(this);
+                Bukkit.getServer().getPluginManager().callEvent(rotatorSpinEvent);
+                if (rotatorSpinEvent.isCancelled()) {
+                    return;
+                }
+                if (entity.isDead()) {
+                    RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! An entity is ded!");
+                    selfDestruct();
+                }
+                constant.setYaw((float) trouble.getAndAdd(yawChange) % 360); //shhh
+                entity.teleport(constant);
+                play();
+            }, 0, rpm));
+        }
+
+
     }
 
     public void play() {

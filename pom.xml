@@ -6,7 +6,7 @@
 
     <groupId>net.awesomepowered</groupId>
     <artifactId>RotatoR</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <packaging>jar</packaging>
 
     <name>RotatoR</name>
@@ -75,6 +75,10 @@
         <repository>
             <id>bstats-repo</id>
             <url>http://repo.bstats.org/content/repositories/releases/</url>
+        </repository>
+        <repository>
+            <id>inventive-repo</id>
+            <url>https://repo.inventivetalent.org/content/groups/public/</url>
         </repository>
     </repositories>
 

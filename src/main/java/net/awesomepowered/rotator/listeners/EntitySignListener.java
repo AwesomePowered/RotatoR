@@ -4,7 +4,6 @@ import net.awesomepowered.rotator.RotatoR;
 import net.awesomepowered.rotator.types.EntitySpinner;
 import net.awesomepowered.rotator.utils.Spinner;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -32,18 +31,19 @@ public class EntitySignListener implements Listener {
         if (plugin.entitySpinners.containsKey(ev.getEntity().getUniqueId())) {
             plugin.debug("Damage", "on a signed spinner, selecting.");
             plugin.leSigners.put(p.getUniqueId(), plugin.entitySpinners.get(ev.getEntity().getUniqueId()));
-            sendMessage(p, "&aYou have selected a signed spinner");
+            sendMessage(p, "&aYou have selected a signed espinner");
             return;
         }
 
         if (Spinner.isSpinnable(ev.getEntity())) {
             plugin.debug("Damage", "Making an EntitySpinner object");
-            EntitySpinner spinner = new EntitySpinner((LivingEntity) ev.getEntity(), 0, plugin.rpm);
+            EntitySpinner spinner = new EntitySpinner(ev.getEntity(), 0, plugin.rpm);
+            spinner.setMode((p.isSneaking()) ? 1 : 0);
             plugin.entitySpinners.put(ev.getEntity().getUniqueId(), spinner);
             spinner.spoolUp();
             plugin.leSigners.put(p.getUniqueId(), spinner);
             sendMessage(p, "&aYou have signed an Entity spinner");
-            plugin.debug("Damage","tried to spool spinner");
+            plugin.debug("Damage","tried to spool espinner");
         }
     }
 
@@ -51,10 +51,8 @@ public class EntitySignListener implements Listener {
     public void onEntityInteract(PlayerInteractAtEntityEvent ev) {
         if (plugin.leSigners.containsKey(ev.getPlayer().getUniqueId()) && plugin.entitySpinners.containsKey(ev.getRightClicked().getUniqueId())) {
             ev.setCancelled(true);
-
             plugin.debug("eInteract", "was called on an signed entity spinner, unsigning..");
             plugin.entitySpinners.get(ev.getRightClicked().getUniqueId()).selfDestruct();
-            plugin.leSigners.put(ev.getPlayer().getUniqueId(), null);
             sendMessage(ev.getPlayer(), "&cThe spinner is no longer signed");
         }
     }

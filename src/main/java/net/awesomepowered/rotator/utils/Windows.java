@@ -11,6 +11,7 @@ import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -108,7 +109,11 @@ public class Windows {
             EntitySpinner entitySpinner = (EntitySpinner) spinner;
             ItemStack egg = new ItemStack(Material.EGG);
             try {
-                egg = new ItemStack(Material.valueOf(entitySpinner.getEntity().getType().name()+"_SPAWN_EGG"));
+                if (entitySpinner.getEntity() instanceof ItemFrame) {
+                    egg = ((ItemFrame) entitySpinner.getEntity()).getItem();
+                } else {
+                    egg = new ItemStack(Material.valueOf(entitySpinner.getEntity().getType().name()+"_SPAWN_EGG"));
+                }
             } catch (Exception ignored) {}
             group.addElement(new StaticGuiElement('x',
                     egg,

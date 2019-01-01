@@ -35,7 +35,7 @@ public final class RotatoR extends JavaPlugin {
     public Map<UUID, Spinnable> entitySpinners = new HashMap<>();
     public Map<UUID, Spinnable> leSigners = new HashMap<>(); //todo make lesigner object instead
     public int rpm = 10;
-    boolean debug = false;
+    public static boolean debug = false;
     public static boolean isPremium = false;
     private Metrics metrics;
 

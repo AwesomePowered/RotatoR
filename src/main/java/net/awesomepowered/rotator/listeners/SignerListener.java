@@ -39,6 +39,11 @@ public class SignerListener implements Listener {
             sendMessage(p, "&cYou are no longer an active signer");
             return;
         }
+        if (message.equalsIgnoreCase("debug")) {
+            RotatoR.debug = !RotatoR.debug;
+            sendMessage(p, "&aDebug mode: " + RotatoR.debug);
+            return;
+        }
         if (message.equalsIgnoreCase("gui") && RotatoR.isPremium) {
             plugin.debug("Chat","GUI was called. Opening main menu");
             sendMessage(p, "&aOpening RotatoR menu");

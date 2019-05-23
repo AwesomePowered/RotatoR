@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.BlockState;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -108,15 +109,15 @@ public final class RotatoR extends JavaPlugin {
         } else {
             for (String s : getConfig().getConfigurationSection("espinner").getKeys(false)) {
                 debug("Loading espinner", s);
-                LivingEntity livingEntity = (LivingEntity) Bukkit.getEntity(UUID.fromString(s));
-                if (livingEntity != null && Spinner.isSpinnable(livingEntity)) {
+                Entity entity = Bukkit.getEntity(UUID.fromString(s));
+                if (entity != null && Spinner.isSpinnable(entity)) {
                     debug("It's espinnable");
                     String sound = getConfig().getString("espinner."+s+".sound");
                     String effect = getConfig().getString("espinner."+s+".effect");
                     String particle = getConfig().getString("espinner."+s+".particle");
                     int rpm = getConfig().getInt("espinner."+s+".rpm", this.rpm);
                     double yaw = getConfig().getDouble("espinner."+s+".yaw", 12.5);
-                    EntitySpinner entitySpinner = new EntitySpinner(livingEntity, 0, rpm);
+                    EntitySpinner entitySpinner = new EntitySpinner(entity, 0, rpm);
                     entitySpinner.setEffect(effect);
                     entitySpinner.setSound(sound);
                     entitySpinner.setParticle(particle);

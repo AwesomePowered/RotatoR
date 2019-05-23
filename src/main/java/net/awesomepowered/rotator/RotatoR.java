@@ -109,6 +109,9 @@ public final class RotatoR extends JavaPlugin {
         } else {
             for (String s : getConfig().getConfigurationSection("espinner").getKeys(false)) {
                 debug("Loading espinner", s);
+                String location = getConfig().getString("espinner."+s+".loc");
+                if (location != null)
+                    stringToLoc(location).getChunk().load(false);
                 Entity entity = Bukkit.getEntity(UUID.fromString(s));
                 if (entity != null && Spinner.isSpinnable(entity)) {
                     debug("It's espinnable");
@@ -160,6 +163,7 @@ public final class RotatoR extends JavaPlugin {
             getConfig().set("espinner."+uuid+".sound", spinner.getSound());
             getConfig().set("espinner."+uuid+".effect", spinner.getEffect());
             getConfig().set("espinner."+uuid+".particle", spinner.getParticle());
+            getConfig().set("espinner."+uuid+".loc", locToString(spinner.getLocation()));
             Bukkit.getScheduler().cancelTask(spinner.getTaskID());
         }
 

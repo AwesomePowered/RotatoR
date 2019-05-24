@@ -136,6 +136,12 @@ public class EntitySpinner implements Spinnable {
                     RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! An entity is ded!");
                     selfDestruct();
                 }
+                if (!entity.isValid()) {
+                    Entity newEntity = Bukkit.getEntity(entity.getUniqueId());
+                    if (newEntity == null)
+                        return;
+                    entity = newEntity;
+                }
                 ItemFrame itemFrame = (ItemFrame) entity;
                 if (mode == 0) {
                     itemFrame.setRotation(itemFrame.getRotation().rotateClockwise());
@@ -155,6 +161,12 @@ public class EntitySpinner implements Spinnable {
                 if (entity.isDead()) {
                     RotatoR.getMain().getLogger().log(Level.WARNING, "Oh noes! An entity is ded!");
                     selfDestruct();
+                }
+                if (!entity.isValid()) {
+                    Entity newEntity = Bukkit.getEntity(entity.getUniqueId());
+                    if (newEntity == null)
+                        return;
+                    entity = newEntity;
                 }
                 constant.setYaw((float) trouble.getAndAdd(yawChange) % 360); //shhh
                 entity.teleport(constant);

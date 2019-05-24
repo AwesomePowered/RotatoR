@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Rotation;
 import org.bukkit.Sound;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
@@ -178,14 +179,22 @@ public class EntitySpinner implements Spinnable {
     }
 
     public void play() {
+        Location location = entity.getLocation().add(0.5, 0, 0.5);
+        if (entity instanceof ItemFrame) {
+            ItemFrame frame = (ItemFrame)entity;
+            BlockFace face = frame.getFacing();
+            location = entity.getLocation().add(face.getModX() / 2.0, 0, face.getModY() / 2.0);
+            //location = entity.getLocation().getBlock().getRelative(frame.getFacing()).getLocation().add(0.5,0,0.5);
+        }
+
         if (sound != null) {
-            entity.getLocation().getWorld().playSound(entity.getLocation(), Sound.valueOf(sound), 1, 1);
+            entity.getLocation().getWorld().playSound(location, Sound.valueOf(sound), 1, 1);
         }
         if (effect != null) {
-            entity.getLocation().getWorld().playEffect(entity.getLocation().add(0.5,0,0.5), Effect.valueOf(effect), 1);
+            entity.getLocation().getWorld().playEffect(location, Effect.valueOf(effect), 1);
         }
         if (particle != null) {
-            entity.getLocation().getWorld().spawnParticle(Particle.valueOf(particle), entity.getLocation().add(0.5,0,0.5), 1);
+            entity.getLocation().getWorld().spawnParticle(Particle.valueOf(particle), location, 1);
         }
     }
 }

@@ -3,7 +3,7 @@ version: ${project.version}
 main: net.awesomepowered.rotator.RotatoR
 authors: [LaxWasHere]
 load: POSTWORLD
-softdepend: [Multiverse-Core, SigngiS]
+softdepend: [Multiverse-Core]
 api-version: 1.13
 commands:
   lesign:

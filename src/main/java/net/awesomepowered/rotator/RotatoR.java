@@ -48,7 +48,6 @@ public final class RotatoR extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new BlockSignListener(this), this);
         Bukkit.getPluginManager().registerEvents(new EntitySignListener(this), this);
         checkPremium();
-        checkForSigns();
         spoolSpinners();
         metrics = new Metrics(this, 3630);
         metrics.addCustomChart(new SimplePie("premium", () -> String.valueOf(isPremium)));
@@ -59,14 +58,6 @@ public final class RotatoR extends JavaPlugin {
 
     public void onDisable() {
         saveSpinners();
-    }
-
-    public void checkForSigns() {
-        Plugin plugin = Bukkit.getPluginManager().getPlugin("SigngiS");
-        if (plugin != null) {
-            getLogger().log(Level.INFO, "I asked life for some documentation and it gave me a bloody lemon.");
-            Bukkit.getPluginManager().disablePlugin(plugin);
-        }
     }
 
     public static RotatoR getMain() {

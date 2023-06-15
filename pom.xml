@@ -6,7 +6,7 @@
 
     <groupId>net.awesomepowered</groupId>
     <artifactId>RotatoR</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7P</version>
     <packaging>jar</packaging>
 
     <name>RotatoR</name>
@@ -36,6 +36,10 @@
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
+                            <shadedPattern>net.awesomepowered.rotator</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>de.themoep</pattern>
                             <shadedPattern>net.awesomepowered.rotator</shadedPattern>
                         </relocation>
                     </relocations>

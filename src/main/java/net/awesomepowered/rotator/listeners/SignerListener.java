@@ -4,7 +4,7 @@ import net.awesomepowered.rotator.RotatoR;
 import net.awesomepowered.rotator.types.EntitySpinner;
 import net.awesomepowered.rotator.utils.Rotation;
 import net.awesomepowered.rotator.utils.Windows;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Particle;

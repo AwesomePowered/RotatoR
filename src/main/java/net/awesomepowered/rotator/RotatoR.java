@@ -10,23 +10,20 @@ import net.awesomepowered.rotator.utils.Spinner;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.inventivetalent.update.spigot.SpigotUpdater;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 public final class RotatoR extends JavaPlugin {
@@ -53,9 +50,8 @@ public final class RotatoR extends JavaPlugin {
         checkPremium();
         checkForSigns();
         spoolSpinners();
-        metrics = new Metrics(this);
-        metrics.addCustomChart(new Metrics.SimplePie("premium", () -> String.valueOf(isPremium)));
-        updateCheck();
+        metrics = new Metrics(this, 3630);
+        metrics.addCustomChart(new SimplePie("premium", () -> String.valueOf(isPremium)));
         if (!getServer().getVersion().contains("git-Bukkit")) {
             signerTimer();
         }
@@ -202,14 +198,6 @@ public final class RotatoR extends JavaPlugin {
     public void checkPremium() {
         isPremium = (getDescription().getVersion().contains("P") || getConfig().getBoolean("premium", false));
         debug("Premium: ", isPremium);
-    }
-
-    public void updateCheck() {
-        try {
-            new SpigotUpdater(this, 61960);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public void debug(Object... o) {

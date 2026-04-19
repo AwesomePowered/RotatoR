@@ -14,9 +14,14 @@ import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -47,6 +52,30 @@ public final class RotatoR extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new SignerListener(this), this);
         Bukkit.getPluginManager().registerEvents(new BlockSignListener(this), this);
         Bukkit.getPluginManager().registerEvents(new EntitySignListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new Listener() {
+            @EventHandler
+            public void onWorldLoad(WorldLoadEvent event) {
+                spoolSpinners();
+            }
+            @EventHandler
+            public void onWorldUnload(WorldUnloadEvent event) {
+                World world = event.getWorld();
+                blockSpinners.entrySet().removeIf(entry -> {
+                    if (entry.getKey().getWorld().equals(world)) {
+                        Bukkit.getScheduler().cancelTask(entry.getValue().getTaskID());
+                        return true;
+                    }
+                    return false;
+                });
+                entitySpinners.entrySet().removeIf(entry -> {
+                    if (entry.getValue().getLocation().getWorld().equals(world)) {
+                        Bukkit.getScheduler().cancelTask(entry.getValue().getTaskID());
+                        return true;
+                    }
+                    return false;
+                });
+            }
+        }, this);
         checkPremium();
         spoolSpinners();
         metrics = new Metrics(this, 3630);
@@ -72,7 +101,7 @@ public final class RotatoR extends JavaPlugin {
             for (String s : getConfig().getConfigurationSection("spinner").getKeys(false)) {
                 debug("Loading spinner", s);
                 Location loc = stringToLoc(s);
-                if (loc != null && Spinner.isSpinnable(loc.getBlock())) {
+                if (loc != null && loc.getWorld() != null && !blockSpinners.containsKey(loc) && Spinner.isSpinnable(loc.getBlock())) {
                     debug("It's spinnable");
                     BlockState blockState = loc.getBlock().getState();
                     int mode = getConfig().getInt("spinner."+s+".mode");
@@ -97,10 +126,14 @@ public final class RotatoR extends JavaPlugin {
             for (String s : getConfig().getConfigurationSection("espinner").getKeys(false)) {
                 debug("Loading espinner", s);
                 String location = getConfig().getString("espinner."+s+".loc");
-                if (location != null)
-                    stringToLoc(location).getChunk().load(false);
+                if (location != null) {
+                    Location loc = stringToLoc(location);
+                    if (loc != null && loc.getWorld() != null) {
+                        loc.getChunk().load(false);
+                    }
+                }
                 Entity entity = Bukkit.getEntity(UUID.fromString(s));
-                if (entity != null && Spinner.isSpinnable(entity)) {
+                if (entity != null && !entitySpinners.containsKey(UUID.fromString(s)) && Spinner.isSpinnable(entity)) {
                     debug("It's espinnable");
                     String sound = getConfig().getString("espinner."+s+".sound");
                     String effect = getConfig().getString("espinner."+s+".effect");

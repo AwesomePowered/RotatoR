@@ -106,8 +106,12 @@ public final class RotatoR extends JavaPlugin {
             for (String s : getConfig().getConfigurationSection("espinner").getKeys(false)) {
                 debug("Loading espinner", s);
                 String location = getConfig().getString("espinner."+s+".loc");
-                if (location != null)
-                    stringToLoc(location).getChunk().load(false);
+                if (location != null) {
+                    Location loc = stringToLoc(location);
+                    if (loc != null && loc.getWorld() != null) {
+                        loc.getChunk().load(false);
+                    }
+                }
                 Entity entity = Bukkit.getEntity(UUID.fromString(s));
                 if (entity != null && !entitySpinners.containsKey(UUID.fromString(s)) && Spinner.isSpinnable(entity)) {
                     debug("It's espinnable");

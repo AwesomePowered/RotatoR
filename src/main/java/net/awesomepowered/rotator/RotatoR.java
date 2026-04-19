@@ -14,12 +14,14 @@ import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -54,6 +56,24 @@ public final class RotatoR extends JavaPlugin {
             @EventHandler
             public void onWorldLoad(WorldLoadEvent event) {
                 spoolSpinners();
+            }
+            @EventHandler
+            public void onWorldUnload(WorldUnloadEvent event) {
+                World world = event.getWorld();
+                blockSpinners.entrySet().removeIf(entry -> {
+                    if (entry.getKey().getWorld().equals(world)) {
+                        Bukkit.getScheduler().cancelTask(entry.getValue().getTaskID());
+                        return true;
+                    }
+                    return false;
+                });
+                entitySpinners.entrySet().removeIf(entry -> {
+                    if (entry.getValue().getLocation().getWorld().equals(world)) {
+                        Bukkit.getScheduler().cancelTask(entry.getValue().getTaskID());
+                        return true;
+                    }
+                    return false;
+                });
             }
         }, this);
         checkPremium();

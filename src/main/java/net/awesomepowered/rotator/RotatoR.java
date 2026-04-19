@@ -72,7 +72,7 @@ public final class RotatoR extends JavaPlugin {
             for (String s : getConfig().getConfigurationSection("spinner").getKeys(false)) {
                 debug("Loading spinner", s);
                 Location loc = stringToLoc(s);
-                if (loc != null && Spinner.isSpinnable(loc.getBlock())) {
+                if (loc != null && loc.getWorld() != null && Spinner.isSpinnable(loc.getBlock())) {
                     debug("It's spinnable");
                     BlockState blockState = loc.getBlock().getState();
                     int mode = getConfig().getInt("spinner."+s+".mode");

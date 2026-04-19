@@ -17,6 +17,9 @@ import org.bukkit.Location;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -47,6 +50,12 @@ public final class RotatoR extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new SignerListener(this), this);
         Bukkit.getPluginManager().registerEvents(new BlockSignListener(this), this);
         Bukkit.getPluginManager().registerEvents(new EntitySignListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new Listener() {
+            @EventHandler
+            public void onWorldLoad(WorldLoadEvent event) {
+                spoolSpinners();
+            }
+        }, this);
         checkPremium();
         spoolSpinners();
         metrics = new Metrics(this, 3630);
@@ -72,7 +81,7 @@ public final class RotatoR extends JavaPlugin {
             for (String s : getConfig().getConfigurationSection("spinner").getKeys(false)) {
                 debug("Loading spinner", s);
                 Location loc = stringToLoc(s);
-                if (loc != null && loc.getWorld() != null && Spinner.isSpinnable(loc.getBlock())) {
+                if (loc != null && loc.getWorld() != null && !blockSpinners.containsKey(loc) && Spinner.isSpinnable(loc.getBlock())) {
                     debug("It's spinnable");
                     BlockState blockState = loc.getBlock().getState();
                     int mode = getConfig().getInt("spinner."+s+".mode");
@@ -100,7 +109,7 @@ public final class RotatoR extends JavaPlugin {
                 if (location != null)
                     stringToLoc(location).getChunk().load(false);
                 Entity entity = Bukkit.getEntity(UUID.fromString(s));
-                if (entity != null && Spinner.isSpinnable(entity)) {
+                if (entity != null && !entitySpinners.containsKey(UUID.fromString(s)) && Spinner.isSpinnable(entity)) {
                     debug("It's espinnable");
                     String sound = getConfig().getString("espinner."+s+".sound");
                     String effect = getConfig().getString("espinner."+s+".effect");
